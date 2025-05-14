@@ -102,6 +102,7 @@ import AddClientPage from "./pages/AddClientPage";
 import AddPackagePage from "./pages/AddPackagePage";
 import EditPackagePage from "./pages/EditPackagePage";
 import EditClientPage from "./pages/EditClientPage";
+import ManageInvoices from "./pages/ManageInvoices";
 
 function App() {
 
@@ -119,6 +120,7 @@ function App() {
         <Route exact path='/add-package' element={<AddPackagePage />} />
         <Route exact path='/edit-package' element={<EditPackagePage />} />
         <Route exact path='/edit-client' element={<EditClientPage />} />
+        <Route exact path='/manage-invoice' element={<ManageInvoices />} />
         <Route exact path='/signup' element={<SignUpPage />} />
         <Route exact path='/' element={<SignInPage />} />
         <Route exact path='/add-user' element={<AddUserPage />} />
