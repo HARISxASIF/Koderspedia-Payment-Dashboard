@@ -17,26 +17,26 @@ const InvoiceDataTable = () => {
   const navigate = useNavigate();
 
   const handleEditPackage = (rowData) => {
-        navigate('/edit-client', { state: { client: rowData } });
+        navigate('#', { state: { client: rowData } });
       };
 
   const handleDeletePackage = () => {
     alert("Deleted Successfully");
   };
 
-  const clientData = [
-    { id: 'CL-001', clientName: 'Pristia Candra', clientImage: DP1, date: '26 May 2025', email: 'lorem@dummy.com', phone: '963258741874',assignedPackages:'Website Development - Basic' },
-    { id: 'CL-002', clientName: 'Hanna Baptista', clientImage: DP2, date: '20 May 2025', email: 'lorem@dummy.com', phone: '963258741874', assignedPackages:'Website Development'},
-    { id: 'CL-003', clientName: 'Miracle Geidt', clientImage: DP3, date: '06 Jun 2025', email: 'lorem@dummy.com', phone: '963258741874',assignedPackages:'Mobile Application' },
-    { id: 'CL-004', clientName: 'Rayna Torff', clientImage: DP4, date: '16 Apr 2025', email: 'lorem@dummy.com', phone: '963258741874',assignedPackages:'Social Media Management' },
-    { id: 'CL-005', clientName: 'Giana Lipshutz', clientImage: DP5, date: '12 Oct 2025', email: 'lorem@dummy.com', phone: '963258741874',assignedPackages:'Website Development' },
-    { id: 'CL-006', clientName: 'James George', clientImage: DP6, date: '28 Nov 2025', email: 'lorem@dummy.com', phone: '963258741874',assignedPackages:'Website Development - Basic' },
-    { id: 'CL-007', clientName: 'Jordyn George', clientImage: DP1, date: '02 Sep 2025', email: 'lorem@dummy.com', phone: '963258741874',assignedPackages:'Website Development ' },
-    { id: 'CL-008', clientName: 'Giana Lipshutz', clientImage: DP2, date: '10 May 2025', email: 'lorem@dummy.com', phone: '963258741874',assignedPackages:'Social Media Management' },
-    { id: 'CL-009', clientName: 'Pristia Candra', clientImage: DP3, date: '18 Dec 2025', email: 'lorem@dummy.com', phone: '963258741874',assignedPackages:'Mobile Application' },
-    { id: 'CL-010', clientName: 'Giana Lipshutz', clientImage: DP4, date: '21 Feb 2025', email: 'lorem@dummy.com', phone: '963258741874',assignedPackages:'Website Development - Basic' },
-    { id: 'CL-011', clientName: 'Rayna Torff', clientImage: DP5, date: '17 May 2025', email: 'lorem@dummy.com', phone: '963258741874', assignedPackages:'Social Media Management'},   
-    { id: 'CL-012', clientName: 'Jordyn George', clientImage: DP6, date: '08 May 2025', email: 'lorem@dummy.com', phone: '963258741874',assignedPackages:'Website Development' },
+  const invoiceData = [
+    { id: 'I-001', clientName: 'Pristia Candra', clientImage: DP1, created_at: '26 May 2025',created_by: 'Peter Webb',assignedPackages:'Website Development - Basic',price:750.00,remaining_price:450.00 },
+    { id: 'I-002', clientName: 'Hanna Baptista', clientImage: DP2, created_at: '20 May 2025',created_by: 'Peter Webb', assignedPackages:'Website Development',price:750.00,remaining_price:450.00},
+    { id: 'I-003', clientName: 'Miracle Geidt', clientImage: DP3, created_at: '06 Jun 2025',created_by: 'Peter Webb',assignedPackages:'Mobile Application',price:750.00,remaining_price:450.00 },
+    { id: 'I-004', clientName: 'Rayna Torff', clientImage: DP4, created_at: '16 July 2025',created_by: 'Peter Webb',assignedPackages:'Social Media Management' ,price:750.00,remaining_price:450.00},
+    { id: 'I-005', clientName: 'Giana Lipshutz', clientImage: DP5, created_at: '12 Oct 2025',created_by: 'Peter Webb',assignedPackages:'Website Development' ,price:750.00,remaining_price:450.00},
+    { id: 'I-006', clientName: 'James George', clientImage: DP6, created_at: '28 Nov 2025',created_by: 'Peter Webb',assignedPackages:'Website Development - Basic' ,price:750.00,remaining_price:450.00},
+    { id: 'I-007', clientName: 'Jordyn George', clientImage: DP1, created_at: '02 Sep 2025',created_by: 'Peter Webb',assignedPackages:'Website Development ' ,price:750.00,remaining_price:450.00},
+    { id: 'I-008', clientName: 'Giana Lipshutz', clientImage: DP2, created_at: '10 July 2025',created_by: 'Peter Webb',assignedPackages:'Social Media Management',price:750.00,remaining_price:450.00 },
+    { id: 'I-009', clientName: 'Pristia Candra', clientImage: DP3, created_at: '18 Dec 2025',created_by: 'Peter Webb',assignedPackages:'Mobile Application' ,price:750.00,remaining_price:450.00},
+    { id: 'I-010', clientName: 'Giana Lipshutz', clientImage: DP4, created_at: '21 July 2025',created_by: 'Peter Webb',assignedPackages:'Website Development - Basic' ,price:750.00,remaining_price:450.00},
+    { id: 'I-011', clientName: 'Rayna Torff', clientImage: DP5, created_at: '17 May 2025',created_by: 'Peter Webb', assignedPackages:'Social Media Management',price:750.00,remaining_price:450.00},   
+    { id: 'I-012', clientName: 'Jordyn George', clientImage: DP6, created_at: '08 May 2025',created_by: 'Peter Webb',assignedPackages:'Website Development' ,price:750.00,remaining_price:450.00},
   ];
 
 
@@ -44,113 +44,140 @@ const InvoiceDataTable = () => {
     if (filter === 'monthly') {
       const currentMonth = new Date().getMonth();
       const currentYear = new Date().getFullYear();
-      return clientData.filter(pkg => {
-        const rowDate = new Date(pkg.date);
+      return invoiceData.filter(pkg => {
+        const rowDate = new Date(pkg.created_at);
         return rowDate.getMonth() === currentMonth && rowDate.getFullYear() === currentYear;
       });
     }
-    return clientData;
+    return invoiceData;
   }, [filter]);
 
-  const columns = [
+const columns = [
+    {
+  name: 'clientName',
+  label: 'Client Name',
+  options: {
+    customBodyRender: (value, tableMeta) => {
+      const safeVal = value.toLowerCase().replace(/\s+/g, '_');
+      return (
+        <div className={`col-clientName val-${safeVal} d-flex align-items-center gap-8`}>
+          <img
+            style={{ height: "35px", width: "35px", borderRadius: "50%" }}
+            src={filteredData[tableMeta.rowIndex].clientImage || DefaultAvatar}
+            alt="package"
+          />
+          {value}
+        </div>
+      );
+    }
+  }
+},
   {
-    name: 'clientName',
-    label: 'Client Name',
-    options: {
-      customBodyRender: (value, tableMeta) => {
-        const safeVal = value.toLowerCase().replace(/\s+/g, '_');
-        return (
-          <div className={`col-clientName val-${safeVal} d-flex align-items-center gap-8`}>
-            <img
-              style={{ height: "35px", width: "35px", borderRadius: "50%" }}
-              src={filteredData[tableMeta.rowIndex].clientImage || DefaultAvatar}
-              alt="package"
+      name: 'price',
+      label: 'Price',
+      options: {
+      customBodyRender: (value) => {
+          const safeVal = value.toFixed(2).replace('.', '-');
+          return (
+          <span className={`col-price val-${safeVal} font-bold`}>
+              ${value.toFixed(2)}
+          </span>
+          );
+      }
+      }
+  },
+  {
+      name: 'remaining_price',
+      label: 'Remaining($)',
+      options: {
+      customBodyRender: (value) => {
+          const safeVal = value.toFixed(2).replace('.', '-');
+          return (
+          <span className={`col-price val-${safeVal} font-bold`}>
+              ${value.toFixed(2)}
+          </span>
+          );
+      }
+      }
+  },
+  {
+  name: 'assignedPackages',
+  label: 'Assigned Packages',
+  options: {
+    customBodyRender: (value) => {
+      const safeVal = value.toLowerCase().replace(/\s+/g, '-');
+      return (
+        <span className={`col-assigned ${safeVal} px-2 py-1 rounded-full font-medium`}>
+          {value}
+        </span>
+      );
+    }
+  }
+},
+  
+  {
+  name: 'created_at',
+  label: 'Created At',
+  options: {
+    customBodyRender: (value) => {
+      const safeVal = value.toLowerCase().replace(/\s+/g, '-');
+      return (
+        <span className={`col-date val-${safeVal} text-gray-600`}>
+          {value}
+        </span>
+      );
+    }
+  }
+},
+  {
+  name: 'created_by',
+  label: 'Created By',
+  options: {
+    customBodyRender: (value) => {
+      const safeVal = value.toLowerCase().replace(/\s+/g, '-');
+      return (
+        <span className={`col-date val-${safeVal} text-gray-600`}>
+          {value}
+        </span>
+      );
+    }
+  }
+},
+  // {
+  //   name: "links",
+  //   label: "Links",
+  //   options: {
+  //     customBodyRender: () => (
+  //       <Stack direction="row" spacing={1}>
+  //         <DownloadIcon fontSize="small" />
+  //         <FileCopyIcon fontSize="small" />
+  //       </Stack>
+  //     )
+  //   }
+  // },
+  {
+      name: 'action',
+      label: 'Action',
+      options: {
+        filter: false,
+        sort: false,
+        customBodyRenderLite: (dataIndex) => {
+          const rowData = filteredData[dataIndex]; 
+          return (
+            <div>
+            <Icon
+              onClick={() => handleEditPackage(rowData)}
+              className="editBtn hover: cursor-pointer"
+              icon="line-md:edit"
+              width="24"
+              height="24"
             />
-            {value}
-          </div>
-        );
-      }
-    }
-  },
-  {
-    name: 'date',
-    label: 'Date',
-    options: {
-      customBodyRender: (value) => {
-        const safeVal = value.toLowerCase().replace(/\s+/g, '-');
-        return (
-          <span className={`col-date val-${safeVal} text-gray-600`}>
-            {value}
-          </span>
-        );
-      }
-    }
-  },
-  {
-    name: 'email',
-    label: 'Email Address',
-    options: {
-      customBodyRender: (value) => {
-        const safeVal = value.toLowerCase().replace(/\s+/g, '-');
-        return (
-          <span className={`col-email val-${safeVal}`}>
-            {value}
-          </span>
-        );
-      }
-    }
-  },
-  {
-    name: 'phone',
-    label: 'Phone',
-    options: {
-      customBodyRender: (value) => {
-        const safeVal = value.replace('.', '-');
-        return (
-          <span className={`col-phone val-${safeVal} font-bold`}>
-            {value}
-          </span>
-        );
-      }
-    }
-  },
-  {
-    name: 'assignedPackages',
-    label: 'Assigned Packages',
-    options: {
-      customBodyRender: (value) => {
-        const safeVal = value.toLowerCase().replace(/\s+/g, '-');
-        return (
-          <span className={`col-assigned ${safeVal} px-2 py-1 rounded-full font-medium`}>
-            {value}
-          </span>
-        );
-      }
-    }
-  },
- {
-   name: 'Manage',
-   label: 'Manage',
-   options: {
-     filter: false,
-     sort: false,
-     customBodyRenderLite: (dataIndex) => {
-       const rowData = filteredData[dataIndex]; 
-       return (
-         <div>
-         <Icon
-           onClick={() => handleEditPackage(rowData)}
-           className="editBtn hover: cursor-pointer"
-           icon="line-md:edit"
-           width="24"
-           height="24"
-         />
-         <Icon onClick={handleDeletePackage} className="deleteBtn hover: cursor-pointer" icon="material-symbols:delete-outline" width="24" height="24" />
-         </div>
-       );
-     },
-   },
- },
+            <Icon onClick={handleDeletePackage} className="deleteBtn hover: cursor-pointer" icon="material-symbols:delete-outline" width="24" height="24" />
+            </div>
+          );
+        },
+      },
+    },
 ];
 
 

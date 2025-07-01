@@ -109,11 +109,29 @@ const MasterLayout = ({ children }) => {
                 <Icon icon='carbon:trophy' className='menu-icon' width="28" height="28" />
                 <span>Packages</span>
               </NavLink>
-            </li>            
+            </li>   
+            <li>
+              <NavLink
+                to='/manage-invoice'
+                className={(navData) => (navData.isActive ? "active-page" : "")}
+              >
+                <Icon icon='akar-icons:clipboard' className='menu-icon' width="28" height="28" />
+                <span>Invoices</span>
+              </NavLink>
+            </li>    
+            <li>
+              <NavLink
+                to='/login-history'
+                className={(navData) => (navData.isActive ? "active-page" : "")}
+              >
+                <Icon icon='teenyicons:briefcase-alt-outline' className='menu-icon' width="23" height="23" style={{marginRight:"10px",}} />
+                <span>Login Activity</span>
+              </NavLink>
+            </li>       
             
           </ul>
         </div>
-        <div class="bottomSide">
+        <div className="bottomSide">
               <ul>
                 <li>
                 <NavLink

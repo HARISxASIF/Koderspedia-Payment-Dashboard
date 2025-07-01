@@ -13,7 +13,7 @@ const ManageInvoices = () => {
             title="Manage Invoices"
             desc="View, create, edit, and manage client accounts efficiently."
             btnText="Add New Link"
-            btnLink="/add-link" 
+            btnLink="/create-invoice" 
         />
 
         {/* TableDataLayer */}
