@@ -1,11 +1,11 @@
 import React from "react";
 import MasterLayout from "../otherImages/MasterLayout";
-import Breadcrumb from "../components/Breadcrumb";
-import ClientPackageTable from "../components/ClientPackageTable";
-import DefaultTopBar from "../components/DefaultTopBar";
-import HomeTopBar from "../components/HomeTopBar";
+import Breadcrumb from "./Breadcrumb";
+import PaymentHistoryTable from "./PaymentHistoryTable";
+import DefaultTopBar from "./DefaultTopBar";
+import HomeTopBar from "./HomeTopBar";
 
-const ClientPackagesPage = () => {
+const PaymentHistoryPage = () => {
   return (
     <>
       {/* MasterLayout */}
@@ -15,14 +15,14 @@ const ClientPackagesPage = () => {
          desc="Your recruitment metrics and activities at a glance"
         />
         <DefaultTopBar
-            title="Package Details"
-            desc="Your Active Packages. Click 'View Details' for more information."
+            title="Project Overview"
+            desc="Status of current project in the system"
             btnText="New Package"
             // btnLink="/add-package" 
         />
 
         {/* TableDataLayer */}
-        <ClientPackageTable />
+        <PaymentHistoryTable />
 
       </MasterLayout>
 
@@ -30,4 +30,4 @@ const ClientPackagesPage = () => {
   );
 };
 
-export default ClientPackagesPage; 
+export default PaymentHistoryPage; 

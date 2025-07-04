@@ -613,7 +613,9 @@ table.dataTable td.dt-type-date {
 .packageTable table th:nth-child(1) button{justify-content: start !important;}
 .packageTable table tr td:nth-child(1){text-align: left !important;}
 
-.col-description{width: 300px; text-overflow: ellipsis; overflow: hidden; display: -webkit-box !important; -webkit-line-clamp: 3; -webkit-box-orient: vertical; white-space: normal; text-align: center; margin: auto;}
+.col-description{width: 250px; text-overflow: ellipsis; overflow: hidden; display: -webkit-box !important; -webkit-line-clamp: 3; -webkit-box-orient: vertical; white-space: normal; text-align: left; margin: auto;}
+.col-deli{width: 230px; background: #EAEAEA; padding: 10px; justify-content: center; border-radius: 6px;}
+.col-deli .deli{color: #232459; font-weight: 600; padding-right: 5px;}
 
 .react-datepicker__current-month, .react-datepicker-time__header, .react-datepicker-year-header {font-size: 0.944rem !important;}
 /* Custom datepicker styles */
@@ -684,7 +686,13 @@ button.MuiIconButton-sizeMedium[aria-label=Search] svg{fill: var(--neutral-100) 
 .mainForm{}
 .mainForm label{font-size: 17px;color: var(--primary-main);}
 .mainForm label span{color: #f00;}
-.mainForm input,.mainForm select{background: var(--neutral-200); padding: 15px 15px; height: 55px !important; font-size: 16px; border-color: var(--neutral-300); border-radius: 10px;}
+.mainForm input, .mainForm select{background: var(--neutral-200); padding: 15px 15px; height: 60px !important; font-size: 16px; border-color: var(--neutral-300); border-radius: 10px;}
+.mainForm .css-13cymwt-control, .css-t3ipsp-control{background: var(--neutral-200) !important; height: 60px !important; border-color: var(--neutral-300) !important; border-radius: 10px !important;}
+.mainForm .css-hlgwow{padding: 0px 15px;}
+.css-19bb58m{margin: 0px !important; padding: 0px !important;}
+.css-1cfo1cf{margin: 0px !important; padding: 0px !important;}
+/* .mainForm .css-hlgwow, .mainForm .css-1cfo1cf {display: block !important; padding: 0px !important;} */
+.mainForm .css-1wy0on6{display: none;}
 .mainForm input[type=file]{    padding: 11px 20px;}
 .mainForm button[type=submit]{background: var(--primary-main); color: var(--neutral-100); padding: 13px 35px !important; border-radius: 10px; margin-top: 70px; float: right; border-color: var(--primary-main);}
 .mainForm button[type=submit]:hover{background: var(--neutral-100); color: var(--primary-main);}

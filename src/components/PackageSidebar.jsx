@@ -4,6 +4,7 @@ import { Offcanvas, Form, Button, Image } from 'react-bootstrap';
 import DefaultAvatar from '../otherImages/default.png';
 
 const PackageSidebar = ({ show, onClose, data }) => {
+  
   if (!data) return null;
 
   return (
@@ -40,6 +41,11 @@ const PackageSidebar = ({ show, onClose, data }) => {
           <Form.Group className="mb-3">
             <Form.Label>Due Date</Form.Label>
             <Form.Control type="text" value={data.date} readOnly />
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>Category</Form.Label>
+            <Form.Control type="text" value={data.category} readOnly />
           </Form.Group>
 
           <div className="text-end  d-flex justify-content-end gap-10 absolute">

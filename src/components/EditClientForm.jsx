@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import Select from 'react-select';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import dp1 from "../otherImages/dp-1.png";
@@ -19,6 +20,25 @@ const EditClientForm = () => {
     clientImage: null, 
   });
 
+  const packageOptions = [
+    { value: 'Website development - basic', label: 'Website Development - Basic' },
+    { value: 'Mobile application', label: 'Mobile Application' },
+    { value: 'Social media management', label: 'Social Media Management' },
+    { value: 'Website development', label: 'Website Development' },
+  ];
+
+  const paymentOptions = [
+    { value: 'Recieved', label: 'Recieved' },
+    { value: 'Pending', label: 'Pending' },
+    { value: 'Cancelled', label: 'Cancelled' },
+  ];
+
+  const deliverableOptions = [
+    { value: 'Logo', label: 'Logo' },
+    { value: 'Home page', label: 'Home Page' },
+    { value: 'Inner pages', label: 'Inner Pages' },
+  ];
+
   useEffect(() => {
     if (clientData) {
       setFormData({
@@ -26,6 +46,8 @@ const EditClientForm = () => {
         email: clientData.email || '',
         phone: clientData.phone || '',
         assignedPackages: clientData.assignedPackages?.charAt(0).toUpperCase() + clientData.assignedPackages?.slice(1).toLowerCase() || '',
+        paymentStatus: clientData.paymentStatus || '',
+        packageDeliverables: clientData.packageDeliverables || '',
         clientImage: clientData.clientImage,
       });
     }
@@ -164,57 +186,55 @@ const EditClientForm = () => {
           <label htmlFor="assignedPackages" className="form-label">
             Assigned Package <span>*</span>
           </label>
-          <select
-            name="assignedPackages"
+          <Select
             id="assignedPackages"
-            className="form-control"
-            value={formData.assignedPackages}
+            name="assignedPackages"
             required
-            onChange={handleChange}
-          >
-            <option value="">Select a package</option>
-            <option value="Website development - basic">Website Development - Basic</option>
-            <option value="Mobile application">Mobile Application</option>
-            <option value="Social media management">Social Media Management</option>
-            <option value="Website development">Website Development</option>
-          </select>
+            options={packageOptions}
+            value={packageOptions.find(opt => opt.value === formData.assignedPackages)}
+            onChange={(selectedOption) =>
+              setFormData(prev => ({ ...prev, assignedPackages: selectedOption.value }))
+            }
+            isSearchable
+            isMulti
+            placeholder="Select a package"
+          />
         </div>
         <div className="row mt-20">
         <div className="mb-4 col-md-6">
           <label htmlFor="paymentStatus" className="form-label">
             Payment Status <span>*</span>
           </label>
-          <select
+          <Select
+           id="paymentStatus"
             name="paymentStatus"
-            id="paymentStatus"
-            className="form-control"
-            value={formData.paymentStatus}
             required
-            onChange={handleChange}
-          >
-            <option value="">Select payment status</option>
-            <option value="Recieved">Recieved</option>
-            <option value="Pending">Pending</option>
-            <option value="Cancelled">Cancelled</option>
-          </select>
+            options={paymentOptions}
+            value={paymentOptions.find(opt => opt.value === formData.paymentStatus)}
+            onChange={(selectedOption) =>
+              setFormData(prev => ({ ...prev, paymentStatus: selectedOption.value }))
+            }
+            isSearchable
+            placeholder="Select payment status"
+          />
         </div>
         <div className="mb-4 col-md-6">
           <label htmlFor="packageDeliverables" className="form-label">
             Package Deliverables <span>*</span>
           </label>
-          <select
-            name="packageDeliverables"
+          <Select
             id="packageDeliverables"
-            className="form-control"
-            value={formData.packageDeliverables}
+            name="packageDeliverables"
             required
-            onChange={handleChange}
-          >
-            <option value="">Select package deliverables</option>
-            <option value="Logo">Logo</option>
-            <option value="Home page">Home Page</option>
-            <option value="Inner pages">Inner Pages</option>
-          </select>
+            options={deliverableOptions}
+            value={deliverableOptions.find(opt => opt.value === formData.packageDeliverables)}
+            onChange={(selectedOption) =>
+              setFormData(prev => ({ ...prev, packageDeliverables: selectedOption.value }))
+            }
+            isSearchable
+            isMulti
+            placeholder="Select deliverables"
+          />
         </div>
       </div>
 

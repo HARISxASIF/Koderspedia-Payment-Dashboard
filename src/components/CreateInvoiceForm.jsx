@@ -1,5 +1,6 @@
 import { useState } from "react";
 import ReactQuill from "react-quill-new";
+import Select from 'react-select';
 import Swal from "sweetalert2";
 
 const CreateInvoiceForm = () => {
@@ -13,6 +14,26 @@ const CreateInvoiceForm = () => {
     paymentType: "",
     saleType: "",
   });
+
+  const customerOptions = [
+    { value: 'Tim Bertin', label: 'Tim Bertin' },
+    { value: 'Zale Crave', label: 'Zale Crave' },
+    { value: 'Martin Grape', label: 'Martin Grape' },
+    { value: 'Callison', label: 'Callison' },
+  ];
+
+  const categoryOptions = [
+    { value: 'Koderspedia', label: 'Koderspedia' },
+    { value: 'Webflow Creators', label: 'Webflow Creators' },
+    { value: 'Shopify Web Creators', label: 'Shopify Web Creators' },
+  ];
+
+  const paymentTypeOptions = [
+    { value: 'Stripe', label: 'Stripe' },
+    { value: 'Paypal', label: 'Paypal' },
+    { value: 'Zelle', label: 'Zelle' },
+    { value: 'Sqaure', label: 'Sqaure' },
+  ];
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -127,20 +148,18 @@ const CreateInvoiceForm = () => {
         <label htmlFor="customer" className="form-label">
           Customer <span>*</span>
         </label>
-        <select
+        <Select
           name="customer"
           id="customer"
-          className="form-control"
           required
-          onChange={handleChange}
-          value={formData.customer}
-        >
-          <option value="">Choose</option>
-          <option value="Tim Bertin">Tim Bertin</option>
-          <option value="Zale Crave">Zale Crave</option>
-          <option value="Martin Grape">Martin Grape</option>
-          <option value="Callison">Callison</option>
-        </select>
+          options={customerOptions}
+          value={customerOptions.find(opt => opt.value === formData.customer)}
+          onChange={(selectedOption) =>
+            setFormData(prev => ({ ...prev, customer: selectedOption.value }))
+          }
+          placeholder="Select a customer"
+          isSearchable
+        />
       </div>
 
       <div className=" mb-3">
@@ -160,39 +179,35 @@ const CreateInvoiceForm = () => {
         <label htmlFor="category" className="form-label">
           Category <span>*</span>
         </label>
-        <select
+        <Select
           name="category"
           id="category"
-          className="form-control"
           required
-          onChange={handleChange}
-          value={formData.category}
-        >
-          <option value="">Choose</option>
-          <option value="Platinum">Platinum</option>
-          <option value="Diamond">Diamond</option>
-          <option value="Gold">Gold</option>
-          <option value="Silver">Silver</option>
-        </select>
+          options={categoryOptions}
+          value={categoryOptions.find(opt => opt.value === formData.category)}
+          onChange={(selectedOption) =>
+            setFormData(prev => ({ ...prev, category: selectedOption.value }))
+          }
+          placeholder="Select a category"
+          isSearchable
+        />
       </div>
       <div className="mb-3">
         <label htmlFor="paymentType" className="form-label">
           Payment Type <span>*</span>
         </label>
-        <select
+        <Select
           name="paymentType"
           id="paymentType"
-          className="form-control"
           required
-          onChange={handleChange}
-          value={formData.paymentType}
-        >
-          <option value="">Select a payment type</option>
-          <option value="Stripe">Stripe</option>
-          <option value="Paypal">Paypal</option>
-          <option value="Zelle">Zelle</option>
-          <option value="Sqaure">Sqaure</option>
-        </select>
+          options={paymentTypeOptions}
+          value={paymentTypeOptions.find(opt => opt.value === formData.paymentType)}
+          onChange={(selectedOption) =>
+            setFormData(prev => ({ ...prev, paymentType: selectedOption.value }))
+          }
+          placeholder="Select a payment type"
+          isSearchable
+        />
       </div>
       <div className="mb-3">
         <label className="form-label">

@@ -7,6 +7,7 @@ import webSideLogo from "../otherImages/logo.svg"
 import profilePic from "../otherImages/profilePic.png"
 
 const MasterLayout = ({ children }) => {
+  const role = localStorage.getItem("role");
   const [sidebarActive, setSidebarActive] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
   const location = useLocation();
@@ -78,57 +79,89 @@ const MasterLayout = ({ children }) => {
         </div>
         <div className='sidebar-menu-area'>
           <ul className='sidebar-menu' id='sidebar-menu'>
-            <li>
-              <NavLink to='/dashboard' 
-              className={(navData) =>
-                navData.isActive ? "active-page" : ""
-              }
-              >
-                <Icon
-                  icon='hugeicons:dashboard-square-01'
-                  className='menu-icon'
-                  width="23"
-                />
-                <span>Dashboard</span>
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                to='/manage-clients'
-                className={(navData) => (navData.isActive ? "active-page" : "")}
-              >
-                <Icon icon='mdi:account-group' className='menu-icon'width="25" height="25" />
-                <span>Manage Clients</span>
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                to='/manage-packages'
-                className={(navData) => (navData.isActive ? "active-page" : "")}
-              >
-                <Icon icon='carbon:trophy' className='menu-icon' width="28" height="28" />
-                <span>Packages</span>
-              </NavLink>
-            </li>   
-            <li>
-              <NavLink
-                to='/manage-invoice'
-                className={(navData) => (navData.isActive ? "active-page" : "")}
-              >
-                <Icon icon='akar-icons:clipboard' className='menu-icon' width="28" height="28" />
-                <span>Invoices</span>
-              </NavLink>
-            </li>    
-            <li>
-              <NavLink
-                to='/login-history'
-                className={(navData) => (navData.isActive ? "active-page" : "")}
-              >
-                <Icon icon='teenyicons:briefcase-alt-outline' className='menu-icon' width="23" height="23" style={{marginRight:"10px",}} />
-                <span>Login Activity</span>
-              </NavLink>
-            </li>       
-            
+            {role === "admin" && (
+            <>
+              <li>
+                <NavLink to='/dashboard' 
+                className={(navData) =>
+                  navData.isActive ? "active-page" : ""
+                }
+                >
+                  <Icon
+                    icon='hugeicons:dashboard-square-01'
+                    className='menu-icon'
+                    width="23"
+                  />
+                  <span>Dashboard</span>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to='/manage-clients'
+                  className={(navData) => (navData.isActive ? "active-page" : "")}
+                >
+                  <Icon icon='mdi:account-group' className='menu-icon'width="25" height="25" />
+                  <span>Manage Clients</span>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to='/manage-packages'
+                  className={(navData) => (navData.isActive ? "active-page" : "")}
+                >
+                  <Icon icon='carbon:trophy' className='menu-icon' width="28" height="28" />
+                  <span>Packages</span>
+                </NavLink>
+              </li>   
+              <li>
+                <NavLink
+                  to='/manage-invoice'
+                  className={(navData) => (navData.isActive ? "active-page" : "")}
+                >
+                  <Icon icon='akar-icons:clipboard' className='menu-icon' width="28" height="28" />
+                  <span>Invoices</span>
+                </NavLink>
+              </li>    
+              <li>
+                <NavLink
+                  to='/login-history'
+                  className={(navData) => (navData.isActive ? "active-page" : "")}
+                >
+                  <Icon icon='teenyicons:briefcase-alt-outline' className='menu-icon' width="23" height="23" style={{marginRight:"10px",}} />
+                  <span>Login Activity</span>
+                </NavLink>
+              </li>       
+            </>
+            )}
+
+            {role === "client" && (
+              <>
+                <li>
+                  <NavLink to='/all-packages' className={(navData) => navData.isActive ? "active-page" : ""}>
+                    <Icon icon='carbon:categories' className='menu-icon' width="24" height="24" />
+                    <span>All Packages</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to='/my-packages' className={(navData) => navData.isActive ? "active-page" : ""}>
+                    <Icon icon='mdi:package-variant' className='menu-icon' width="24" height="24" />
+                    <span>My Packages</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to='/payment-history' className={(navData) => navData.isActive ? "active-page" : ""}>
+                    <Icon icon='fluent:payment-20-regular' className='menu-icon' width="24" height="24" />
+                    <span>Payment History</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to='/edit-profile' className={(navData) => navData.isActive ? "active-page" : ""}>
+                    <Icon icon="material-symbols:settings-outline-rounded" width="24" height="24" />
+                    <span>Settings</span>
+                  </NavLink>
+                </li>
+              </>
+            )}
           </ul>
         </div>
         <div className="bottomSide">

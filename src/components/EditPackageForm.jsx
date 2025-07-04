@@ -12,7 +12,9 @@ const EditPackageForm = () => {
     packageName: '',
     desc: '',
     price: '',
-    packageType: '',
+    additionalNotes: '',
+    upload: '',
+    // packageType: '',
   });
 
   useEffect(() => {
@@ -21,7 +23,9 @@ const EditPackageForm = () => {
         packageName: packageData.packageName || '',
         desc: packageData.description || '',
         price: packageData.price || '',
-        packageType: packageData.packageType?.charAt(0).toUpperCase() + packageData.packageType?.slice(1).toLowerCase() || '',
+        additionalNotes: '',
+        upload: '',
+        // packageType: packageData.packageType?.charAt(0).toUpperCase() + packageData.packageType?.slice(1).toLowerCase() || '',
       });
     }
   }, [packageData]);
@@ -96,24 +100,55 @@ const EditPackageForm = () => {
         />
       </div>
 
-      <div className="row">
-        <div className="mb-3 col-md-6">
-          <label htmlFor="price" className="form-label">
-            Price ($USD) <span>*</span>
+      <div className="mb-3">
+        <label htmlFor="price" className="form-label">
+          Price ($USD) <span>*</span>
+        </label>
+        <input
+          type="text"
+          className="form-control"
+          id="price"
+          name="price"
+          value={formData.price}
+          required
+          onChange={handleChange}
+          placeholder="e.g., $500"
+        />
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label htmlFor="notes" className="form-label">
+          Additional Notes
           </label>
           <input
             type="text"
             className="form-control"
-            id="price"
-            name="price"
-            value={formData.price}
-            required
+            id="notes"
+            name="notes"
             onChange={handleChange}
-            placeholder="e.g., $500"
+            placeholder="Lorem ispum"
           />
         </div>
 
-        <div className="mb-4 col-md-6">
+        <div class="col-md-6 mb-3">
+          <label htmlFor="upload" className="form-label">
+          Upload Scope of Work / Document <span>*</span>
+          </label>
+          <input
+            type="file"
+            className="form-control"
+            id="upload"
+            name="document"
+            accept=".pdf,.doc,.docx,.jpg,.png"  // Optional: file type restrictions
+            required
+            onChange={handleChange}
+          />
+        </div>
+      </div>
+
+
+        {/* <div className="mb-4 col-md-6">
           <label htmlFor="packageType" className="form-label">
             Package Type <span>*</span>
           </label>
@@ -132,7 +167,7 @@ const EditPackageForm = () => {
             <option value="Seo">SEO</option>
           </select>
         </div>
-      </div>
+      </div> */}
 
       <button type="submit" className="btn btn-primary">
         Save Changes

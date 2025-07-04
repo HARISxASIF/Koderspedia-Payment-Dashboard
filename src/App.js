@@ -106,6 +106,10 @@ import ManageInvoices from "./adminPages/ManageInvoices";
 import CreateInvoicePage from "./adminPages/CreateInvoicePage";
 import LoginHistoryPage from "./adminPages/LoginHistoryPage";
 import ClientPackagesPage from "./clientPages/ClientPackagesPage";
+import ProtectedRoute from "./components/ProtectedRoute";
+import MyPackagesPage from "./components/MyPackagesPage";
+import PaymentHistoryPage from "./components/PaymentHistoryPage";
+import EditProfilePage from "./clientPages/EditProfilePage";
 
 function App() {
 
@@ -115,26 +119,31 @@ function App() {
       <RouteScrollToTop />
       <Routes>
 
-        {/* Default Routes */}
-        <Route exact path='/' element={<SignInPage />} />
-        <Route exact path='/signup' element={<SignUpPage />} />  
+        {/* Public Routes */}
+        <Route path='/' element={<SignInPage />} />
+        <Route path='/signup' element={<SignUpPage />} />
+        <Route path='/access-denied' element={<AccessDeniedPage />} />
 
-        {/* Admin Page Routes */}
-        <Route exact path='/dashboard' element={<HomePageOne />} />
-        <Route exact path='/manage-clients' element={<ManageClients />} />
-        <Route exact path='/manage-packages' element={<ManagePackages />} />
-        <Route exact path='/add-client' element={<AddClientPage />} />
-        <Route exact path='/add-package' element={<AddPackagePage />} />
-        <Route exact path='/edit-package' element={<EditPackagePage />} />
-        <Route exact path='/edit-client' element={<EditClientPage />} />
-        <Route exact path='/manage-invoice' element={<ManageInvoices />} />
-        <Route exact path='/create-invoice' element={<CreateInvoicePage />} />
-        <Route exact path='/login-history' element={<LoginHistoryPage />} />
-        
-        {/* Client Page Routes */}
-        <Route exact path='/my-packages' element={<ClientPackagesPage />} />
+        {/* Admin Protected Routes */}
+        <Route path='/dashboard' element={<ProtectedRoute element={HomePageOne} allowedRole="admin" />} />
+        <Route path='/manage-clients' element={<ProtectedRoute element={ManageClients} allowedRole="admin" />} />
+        <Route path='/manage-packages' element={<ProtectedRoute element={ManagePackages} allowedRole="admin" />} />
+        <Route path='/add-client' element={<ProtectedRoute element={AddClientPage} allowedRole="admin" />} />
+        <Route path='/add-package' element={<ProtectedRoute element={AddPackagePage} allowedRole="admin" />} />
+        <Route path='/edit-package' element={<ProtectedRoute element={EditPackagePage} allowedRole="admin" />} />
+        <Route path='/edit-client' element={<ProtectedRoute element={EditClientPage} allowedRole="admin" />} />
+        <Route path='/manage-invoice' element={<ProtectedRoute element={ManageInvoices} allowedRole="admin" />} />
+        <Route path='/create-invoice' element={<ProtectedRoute element={CreateInvoicePage} allowedRole="admin" />} />
+        <Route path='/login-history' element={<ProtectedRoute element={LoginHistoryPage} allowedRole="admin" />} />
 
-        <Route exact path='*' element={<ErrorPage />} />
+        {/* Client Protected Routes */}
+        <Route path='/all-packages' element={<ProtectedRoute element={ClientPackagesPage} allowedRole="client" />} />
+        <Route path='/my-packages' element={<ProtectedRoute element={MyPackagesPage} allowedRole="client" />} />
+        <Route path='/payment-history' element={<ProtectedRoute element={PaymentHistoryPage} allowedRole="client" />} />
+        <Route path='/edit-profile' element={<ProtectedRoute element={EditProfilePage} allowedRole="client" />} />
+
+        {/* Fallback */}
+        <Route path='*' element={<ErrorPage />} />
       </Routes>
     </BrowserRouter>
   );

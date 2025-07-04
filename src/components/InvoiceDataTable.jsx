@@ -11,6 +11,7 @@ import DP3 from '../otherImages/dp-3.png';
 import DP4 from '../otherImages/dp-4.png';
 import DP5 from '../otherImages/dp-5.png';
 import DP6 from '../otherImages/dp-6.png';
+import PDF from '../otherImages/Invoice.pdf';
 
 const InvoiceDataTable = () => {
   const [filter, setFilter] = useState('monthly');
@@ -25,18 +26,18 @@ const InvoiceDataTable = () => {
   };
 
   const invoiceData = [
-    { id: 'I-001', clientName: 'Pristia Candra', clientImage: DP1, created_at: '26 May 2025',created_by: 'Peter Webb',assignedPackages:'Website Development - Basic',price:750.00,remaining_price:450.00 },
-    { id: 'I-002', clientName: 'Hanna Baptista', clientImage: DP2, created_at: '20 May 2025',created_by: 'Peter Webb', assignedPackages:'Website Development',price:750.00,remaining_price:450.00},
-    { id: 'I-003', clientName: 'Miracle Geidt', clientImage: DP3, created_at: '06 Jun 2025',created_by: 'Peter Webb',assignedPackages:'Mobile Application',price:750.00,remaining_price:450.00 },
-    { id: 'I-004', clientName: 'Rayna Torff', clientImage: DP4, created_at: '16 July 2025',created_by: 'Peter Webb',assignedPackages:'Social Media Management' ,price:750.00,remaining_price:450.00},
-    { id: 'I-005', clientName: 'Giana Lipshutz', clientImage: DP5, created_at: '12 Oct 2025',created_by: 'Peter Webb',assignedPackages:'Website Development' ,price:750.00,remaining_price:450.00},
-    { id: 'I-006', clientName: 'James George', clientImage: DP6, created_at: '28 Nov 2025',created_by: 'Peter Webb',assignedPackages:'Website Development - Basic' ,price:750.00,remaining_price:450.00},
-    { id: 'I-007', clientName: 'Jordyn George', clientImage: DP1, created_at: '02 Sep 2025',created_by: 'Peter Webb',assignedPackages:'Website Development ' ,price:750.00,remaining_price:450.00},
-    { id: 'I-008', clientName: 'Giana Lipshutz', clientImage: DP2, created_at: '10 July 2025',created_by: 'Peter Webb',assignedPackages:'Social Media Management',price:750.00,remaining_price:450.00 },
-    { id: 'I-009', clientName: 'Pristia Candra', clientImage: DP3, created_at: '18 Dec 2025',created_by: 'Peter Webb',assignedPackages:'Mobile Application' ,price:750.00,remaining_price:450.00},
-    { id: 'I-010', clientName: 'Giana Lipshutz', clientImage: DP4, created_at: '21 July 2025',created_by: 'Peter Webb',assignedPackages:'Website Development - Basic' ,price:750.00,remaining_price:450.00},
-    { id: 'I-011', clientName: 'Rayna Torff', clientImage: DP5, created_at: '17 May 2025',created_by: 'Peter Webb', assignedPackages:'Social Media Management',price:750.00,remaining_price:450.00},   
-    { id: 'I-012', clientName: 'Jordyn George', clientImage: DP6, created_at: '08 May 2025',created_by: 'Peter Webb',assignedPackages:'Website Development' ,price:750.00,remaining_price:450.00},
+    { id: 'I-001', clientName: 'Pristia Candra', clientImage: DP1, created_at: '26 May 2025',created_by: 'Peter Webb',assignedPackages:'Website Development - Basic',price:750.00,remaining_price:450.00, invoice_link: 'https://koderspedia.com/', download_invoice:PDF},
+    { id: 'I-002', clientName: 'Hanna Baptista', clientImage: DP2, created_at: '20 May 2025',created_by: 'Peter Webb', assignedPackages:'Website Development',price:750.00,remaining_price:450.00, invoice_link: 'https://koderspedia.com/', download_invoice:PDF},
+    { id: 'I-003', clientName: 'Miracle Geidt', clientImage: DP3, created_at: '06 Jun 2025',created_by: 'Peter Webb',assignedPackages:'Mobile Application',price:750.00,remaining_price:450.00, invoice_link: 'https://koderspedia.com/', download_invoice:PDF },
+    { id: 'I-004', clientName: 'Rayna Torff', clientImage: DP4, created_at: '16 July 2025',created_by: 'Peter Webb',assignedPackages:'Social Media Management' ,price:750.00,remaining_price:450.00, invoice_link: 'https://koderspedia.com/', download_invoice:PDF},
+    { id: 'I-005', clientName: 'Giana Lipshutz', clientImage: DP5, created_at: '12 Oct 2025',created_by: 'Peter Webb',assignedPackages:'Website Development' ,price:750.00,remaining_price:450.00, invoice_link: 'https://koderspedia.com/', download_invoice:PDF},
+    { id: 'I-006', clientName: 'James George', clientImage: DP6, created_at: '28 Nov 2025',created_by: 'Peter Webb',assignedPackages:'Website Development - Basic' ,price:750.00,remaining_price:450.00, invoice_link: 'https://koderspedia.com/', download_invoice:PDF},
+    { id: 'I-007', clientName: 'Jordyn George', clientImage: DP1, created_at: '02 Sep 2025',created_by: 'Peter Webb',assignedPackages:'Website Development ' ,price:750.00,remaining_price:450.00, invoice_link: 'https://koderspedia.com/', download_invoice:PDF},
+    { id: 'I-008', clientName: 'Giana Lipshutz', clientImage: DP2, created_at: '10 July 2025',created_by: 'Peter Webb',assignedPackages:'Social Media Management',price:750.00,remaining_price:450.00, invoice_link: 'https://koderspedia.com/', download_invoice:PDF },
+    { id: 'I-009', clientName: 'Pristia Candra', clientImage: DP3, created_at: '18 Dec 2025',created_by: 'Peter Webb',assignedPackages:'Mobile Application' ,price:750.00,remaining_price:450.00, invoice_link: 'https://koderspedia.com/', download_invoice:PDF},
+    { id: 'I-010', clientName: 'Giana Lipshutz', clientImage: DP4, created_at: '21 July 2025',created_by: 'Peter Webb',assignedPackages:'Website Development - Basic' ,price:750.00,remaining_price:450.00, invoice_link: 'https://koderspedia.com/', download_invoice:PDF},
+    { id: 'I-011', clientName: 'Rayna Torff', clientImage: DP5, created_at: '17 May 2025',created_by: 'Peter Webb', assignedPackages:'Social Media Management',price:750.00,remaining_price:450.00, invoice_link: 'https://koderspedia.com/', download_invoice:PDF},   
+    { id: 'I-012', clientName: 'Jordyn George', clientImage: DP6, created_at: '08 May 2025',created_by: 'Peter Webb',assignedPackages:'Website Development' ,price:750.00,remaining_price:450.00, invoice_link: 'https://koderspedia.com/', download_invoice:PDF},
   ];
 
 
@@ -143,18 +144,59 @@ const columns = [
     }
   }
 },
-  // {
-  //   name: "links",
-  //   label: "Links",
-  //   options: {
-  //     customBodyRender: () => (
-  //       <Stack direction="row" spacing={1}>
-  //         <DownloadIcon fontSize="small" />
-  //         <FileCopyIcon fontSize="small" />
-  //       </Stack>
-  //     )
-  //   }
-  // },
+  {
+      name: 'links',
+      label: 'Links',
+      options: {
+        filter: false,
+        sort: false,
+        customBodyRenderLite: (dataIndex) => {
+          const rowData = filteredData[dataIndex];
+
+          // Function: Download Invoice PDF
+          const handleDownloadInvoice = () => {
+            const link = document.createElement('a');
+            link.href = rowData.download_invoice; // e.g. '/assets/invoices/invoice.pdf'
+            link.download = 'invoice.pdf'; // optional custom file name
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          };
+
+          // Function: Copy Invoice Link
+          const handleInvoiceLink = () => {
+            if (rowData.invoice_link) {
+              navigator.clipboard.writeText(rowData.invoice_link)
+                .then(() => {
+                  alert("Invoice link copied to clipboard!");
+                })
+                .catch(err => {
+                  console.error("Clipboard copy failed:", err);
+                });
+            }
+          };
+
+          return (
+            <div className="flex gap-2 invoice-link">
+              <Icon
+                onClick={handleDownloadInvoice}
+                className="d-invoice hover:cursor-pointer"
+                icon="material-symbols:sim-card-download"
+                width="24"
+                height="24"
+              />
+              <Icon
+                onClick={handleInvoiceLink}
+                className="copy-invoice hover:cursor-pointer"
+                icon="material-symbols-light:content-copy-rounded"
+                width="24"
+                height="24"
+              />
+            </div>
+          );
+        },
+      },
+    },
   {
       name: 'action',
       label: 'Action',
@@ -164,7 +206,7 @@ const columns = [
         customBodyRenderLite: (dataIndex) => {
           const rowData = filteredData[dataIndex]; 
           return (
-            <div>
+            <div className='d-flex'>
             <Icon
               onClick={() => handleEditPackage(rowData)}
               className="editBtn hover: cursor-pointer"
