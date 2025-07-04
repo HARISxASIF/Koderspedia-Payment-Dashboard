@@ -11,10 +11,10 @@ const SignInLayer = () => {
     const { email, password } = values;
 
     // Dummy logic: check role based on email (replace with real API in future)
-    if (email === "admin@example.com" && password === "admin123") {
+    if (email === "admin@gmail.com" && password === "admin123") {
       localStorage.setItem("role", "admin");
       navigate("/dashboard");
-    } else if (email === "client@example.com" && password === "client123") {
+    } else if (email === "client@gmail.com" && password === "client123") {
       localStorage.setItem("role", "client");
       navigate("/all-packages");
     } else {
