@@ -1,14 +1,9 @@
 import React from 'react'
-import SalesStatisticOne from './child/SalesStatisticOne';
-import TotalSubscriberOne from './child/TotalSubscriberOne';
-import UsersOverviewOne from './child/UsersOverviewOne';
-import ClientInvoiceList from './child/ClientInvoiceList';
-import TopPerformerOne from './child/TopPerformerOne';
-import TopCountries from './child/TopCountries';
-import GeneratedContent from './child/GeneratedContent';
-import UnitCountOne from './child/UnitCountOne';
-import UsersOverviewTwo from './child/UsersOverviewTwo';
-import DynamicTable from './child/DynamicTable';
+import SalesStatisticOne from '../components/SalesStatisticOne';
+import UsersOverviewOne from '../components/UsersOverviewOne';
+import ClientInvoiceList from '../components/ClientInvoiceList';
+import UnitCountOne from '../components/UnitCountOne';
+import UsersOverviewTwo from '../components/UsersOverviewTwo';
 
 const DashBoardLayerOne = () => {
 

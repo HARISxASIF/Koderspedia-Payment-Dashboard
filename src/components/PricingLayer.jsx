@@ -1,6 +1,6 @@
 import React from 'react'
-import PricingPlanMultipleColor from './child/PricingPlanMultipleColor'
-import SimplePricingPlan from './child/SimplePricingPlan'
+import PricingPlanMultipleColor from '../child/PricingPlanMultipleColor'
+import SimplePricingPlan from '../child/SimplePricingPlan'
 
 const PricingLayer = () => {
     return (

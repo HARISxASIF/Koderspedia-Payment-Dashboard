@@ -1,6 +1,5 @@
 import React from "react";
 import MasterLayout from "../otherImages/MasterLayout";
-import Breadcrumb from "../components/Breadcrumb";
 import PackageDataTable from "../components/PackageDataTable";
 import DefaultTopBar from "../components/DefaultTopBar";
 

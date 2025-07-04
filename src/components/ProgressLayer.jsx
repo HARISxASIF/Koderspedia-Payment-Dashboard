@@ -1,13 +1,13 @@
 import React from 'react'
-import DefaultProgress from './child/DefaultProgress'
-import ProgressWithMultipleColor from './child/ProgressWithMultipleColor'
-import ProgressWithRightLabel from './child/ProgressWithRightLabel'
-import StripedProgress from './child/StripedProgress'
-import AnimatedProgress from './child/AnimatedProgress'
-import GradientProgress from './child/GradientProgress'
-import GradientProgressTwo from './child/GradientProgressTwo'
-import GradientProgressThree from './child/GradientProgressThree'
-import ProgressCircle from './child/ProgressCircle'
+import DefaultProgress from '../child/DefaultProgress'
+import ProgressWithMultipleColor from '../child/ProgressWithMultipleColor'
+import ProgressWithRightLabel from '../child/ProgressWithRightLabel'
+import StripedProgress from '../child/StripedProgress'
+import AnimatedProgress from '../child/AnimatedProgress'
+import GradientProgress from '../child/GradientProgress'
+import GradientProgressTwo from '../child/GradientProgressTwo'
+import GradientProgressThree from '../child/GradientProgressThree'
+import ProgressCircle from '../child/ProgressCircle'
 
 const ProgressLayer = () => {
     return (
