@@ -1,150 +1,181 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import MUIDataTable from 'mui-datatables';
 import { Icon } from '@iconify/react';
 import { useNavigate } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import DefaultAvatar from '../otherImages/default.png';
-import DP1 from '../otherImages/dp-1.png';
-import DP2 from '../otherImages/dp-2.png';
-import DP3 from '../otherImages/dp-3.png';
-import DP4 from '../otherImages/dp-4.png';
-import DP5 from '../otherImages/dp-5.png';
-import DP6 from '../otherImages/dp-6.png';
-import PDF from '../otherImages/Invoice.pdf';
+import { useSelector, useDispatch } from 'react-redux';
+import { deleteInvoice, fetchInvoices } from '../store/slices/invoiceSlice';
+import DeleteConfirmButton from './DeleteConfirmButton';
 
 const InvoiceDataTable = () => {
+  const dispatch = useDispatch();
   const [filter, setFilter] = useState('monthly');
   const navigate = useNavigate();
+  const { invoices, loading, error } = useSelector((state) => state.invoices);
+  useEffect(() => {
+    dispatch(fetchInvoices());
+  }, [dispatch])
 
   const handleEditPackage = (rowData) => {
-        navigate('#', { state: { client: rowData } });
-      };
-
-  const handleDeletePackage = () => {
-    alert("Deleted Successfully");
+    navigate(`/edit-invoice/${rowData.id}`, { state: { invoice: rowData } });
   };
-
-  const invoiceData = [
-    { id: 'I-001', clientName: 'Pristia Candra', clientImage: DP1, created_at: '26 May 2025',created_by: 'Peter Webb',assignedPackages:'Website Development - Basic',price:750.00,remaining_price:450.00, invoice_link: 'https://koderspedia.com/', download_invoice:PDF},
-    { id: 'I-002', clientName: 'Hanna Baptista', clientImage: DP2, created_at: '20 May 2025',created_by: 'Peter Webb', assignedPackages:'Website Development',price:750.00,remaining_price:450.00, invoice_link: 'https://koderspedia.com/', download_invoice:PDF},
-    { id: 'I-003', clientName: 'Miracle Geidt', clientImage: DP3, created_at: '06 Jun 2025',created_by: 'Peter Webb',assignedPackages:'Mobile Application',price:750.00,remaining_price:450.00, invoice_link: 'https://koderspedia.com/', download_invoice:PDF },
-    { id: 'I-004', clientName: 'Rayna Torff', clientImage: DP4, created_at: '16 July 2025',created_by: 'Peter Webb',assignedPackages:'Social Media Management' ,price:750.00,remaining_price:450.00, invoice_link: 'https://koderspedia.com/', download_invoice:PDF},
-    { id: 'I-005', clientName: 'Giana Lipshutz', clientImage: DP5, created_at: '12 Oct 2025',created_by: 'Peter Webb',assignedPackages:'Website Development' ,price:750.00,remaining_price:450.00, invoice_link: 'https://koderspedia.com/', download_invoice:PDF},
-    { id: 'I-006', clientName: 'James George', clientImage: DP6, created_at: '28 Nov 2025',created_by: 'Peter Webb',assignedPackages:'Website Development - Basic' ,price:750.00,remaining_price:450.00, invoice_link: 'https://koderspedia.com/', download_invoice:PDF},
-    { id: 'I-007', clientName: 'Jordyn George', clientImage: DP1, created_at: '02 Sep 2025',created_by: 'Peter Webb',assignedPackages:'Website Development ' ,price:750.00,remaining_price:450.00, invoice_link: 'https://koderspedia.com/', download_invoice:PDF},
-    { id: 'I-008', clientName: 'Giana Lipshutz', clientImage: DP2, created_at: '10 July 2025',created_by: 'Peter Webb',assignedPackages:'Social Media Management',price:750.00,remaining_price:450.00, invoice_link: 'https://koderspedia.com/', download_invoice:PDF },
-    { id: 'I-009', clientName: 'Pristia Candra', clientImage: DP3, created_at: '18 Dec 2025',created_by: 'Peter Webb',assignedPackages:'Mobile Application' ,price:750.00,remaining_price:450.00, invoice_link: 'https://koderspedia.com/', download_invoice:PDF},
-    { id: 'I-010', clientName: 'Giana Lipshutz', clientImage: DP4, created_at: '21 July 2025',created_by: 'Peter Webb',assignedPackages:'Website Development - Basic' ,price:750.00,remaining_price:450.00, invoice_link: 'https://koderspedia.com/', download_invoice:PDF},
-    { id: 'I-011', clientName: 'Rayna Torff', clientImage: DP5, created_at: '17 May 2025',created_by: 'Peter Webb', assignedPackages:'Social Media Management',price:750.00,remaining_price:450.00, invoice_link: 'https://koderspedia.com/', download_invoice:PDF},   
-    { id: 'I-012', clientName: 'Jordyn George', clientImage: DP6, created_at: '08 May 2025',created_by: 'Peter Webb',assignedPackages:'Website Development' ,price:750.00,remaining_price:450.00, invoice_link: 'https://koderspedia.com/', download_invoice:PDF},
-  ];
-
+  const transformedInvoices = useMemo(() => {
+    if (!invoices) return [];
+    return invoices.map(invoice => ({
+      ...invoice,
+      date: invoice.created_at ? new Date(invoice.created_at).toLocaleDateString() : 'N/A',
+    }))
+  }, [invoices])
 
   const filteredData = useMemo(() => {
     if (filter === 'monthly') {
       const currentMonth = new Date().getMonth();
       const currentYear = new Date().getFullYear();
-      return invoiceData.filter(pkg => {
+      return transformedInvoices.filter(pkg => {
         const rowDate = new Date(pkg.created_at);
         return rowDate.getMonth() === currentMonth && rowDate.getFullYear() === currentYear;
       });
     }
-    return invoiceData;
-  }, [filter]);
+    return transformedInvoices;
+  }, [filter, transformedInvoices]);
 
-const columns = [
+  const columns = [
     {
-  name: 'clientName',
-  label: 'Client Name',
-  options: {
-    customBodyRender: (value, tableMeta) => {
-      const safeVal = value.toLowerCase().replace(/\s+/g, '_');
-      return (
-        <div className={`col-clientName val-${safeVal} d-flex align-items-center gap-8`}>
-          <img
-            style={{ height: "35px", width: "35px", borderRadius: "50%" }}
-            src={filteredData[tableMeta.rowIndex].clientImage || DefaultAvatar}
-            alt="package"
-          />
-          {value}
-        </div>
-      );
-    }
-  }
-},
-  {
+      name: 'title',
+      label: 'Title',
+      options: {
+        customBodyRenderLite: (dataIndex) => {
+          const rowData = filteredData[dataIndex];
+          // Safely access nested properties
+          const title = rowData.title;
+          const safeVal = title.toLowerCase().replace(/\s+/g, '_');
+
+          return (
+            <div className={`col-name val-${safeVal} d-flex align-items-center gap-8`}>
+             
+              {title}
+            </div>
+          );
+        }
+      }
+    },
+    {
+      name: 'name',
+      label: 'Client',
+      options: {
+        customBodyRenderLite: (dataIndex) => {
+          const rowData = filteredData[dataIndex];
+          // Safely access nested properties
+          const clientName = rowData.client?.name || 'No Name';
+          const clientImage = rowData.client?.image_url || DefaultAvatar;
+          const safeVal = (clientName || '').toLowerCase().replace(/\s+/g, '_');
+
+          return (
+            <div className={`col-name val-${safeVal} d-flex align-items-center gap-8`}>
+              <img
+                style={{ height: "35px", width: "35px", borderRadius: "50%" }}
+                src={clientImage}
+                alt="client"
+              />
+              {clientName}
+            </div>
+          );
+        }
+      }
+    },
+    {
       name: 'price',
       label: 'Price',
       options: {
-      customBodyRender: (value) => {
-          const safeVal = value.toFixed(2).replace('.', '-');
+        customBodyRenderLite: (dataIndex) => {
+          const rowData = filteredData[dataIndex];
+          const price = parseFloat(rowData.price) || 0; // Convert string to number
+          const safeVal = price.toFixed(2).replace('.', '-');
           return (
-          <span className={`col-price val-${safeVal} font-bold`}>
-              ${value.toFixed(2)}
-          </span>
+            <span className={`col-price val-${safeVal} font-bold`}>
+              ${price.toFixed(2)}
+            </span>
           );
+        }
       }
-      }
-  },
-  {
+    },
+    {
       name: 'remaining_price',
       label: 'Remaining($)',
       options: {
-      customBodyRender: (value) => {
-          const safeVal = value.toFixed(2).replace('.', '-');
+        customBodyRenderLite: (dataIndex) => {
+          const rowData = filteredData[dataIndex];
+          const remainingPrice = parseFloat(rowData.remaining_price) || 0;
+          const safeVal = remainingPrice.toFixed(2).replace('.', '-');
+
           return (
-          <span className={`col-price val-${safeVal} font-bold`}>
-              ${value.toFixed(2)}
-          </span>
+            <span className={`col-price val-${safeVal} font-bold`}>
+              ${remainingPrice.toFixed(2)}
+            </span>
           );
+        }
       }
+    },
+    // {
+    //   name: 'assignedPackages',
+    //   label: 'Assigned Packages',
+    //   options: {
+    //     customBodyRenderLite: (dataIndex) => {
+    //       const rowData = filteredData[dataIndex];
+    //       const packages = rowData.client?.packages || [];
+
+    //       return (
+    //         <div className="flex flex-wrap gap-2">
+    //           {packages.map((pkg) => (
+    //             <span
+    //               key={pkg.id}
+    //               className="px-2 py-1 bg-gray-100 rounded-full text-sm font-medium"
+    //             >
+    //               {pkg.name} (${parseFloat(pkg.price).toFixed(2)})
+    //             </span>
+    //           ))}
+    //         </div>
+    //       );
+    //     }
+    //   }
+    // },
+
+    {
+      name: 'created_at',
+      label: 'Created At',
+      options: {
+        customBodyRenderLite: (dataIndex) => {
+          const rowData = filteredData[dataIndex];
+          const safeVal = rowData.date.toLowerCase().replace(/\s+/g, '-');
+
+          return (
+            <span className={`col-date val-${safeVal} text-gray-600`}>
+              {rowData.date}
+            </span>
+          );
+        }
       }
-  },
-  {
-  name: 'assignedPackages',
-  label: 'Assigned Packages',
-  options: {
-    customBodyRender: (value) => {
-      const safeVal = value.toLowerCase().replace(/\s+/g, '-');
-      return (
-        <span className={`col-assigned ${safeVal} px-2 py-1 rounded-full font-medium`}>
-          {value}
-        </span>
-      );
-    }
-  }
-},
-  
-  {
-  name: 'created_at',
-  label: 'Created At',
-  options: {
-    customBodyRender: (value) => {
-      const safeVal = value.toLowerCase().replace(/\s+/g, '-');
-      return (
-        <span className={`col-date val-${safeVal} text-gray-600`}>
-          {value}
-        </span>
-      );
-    }
-  }
-},
-  {
-  name: 'created_by',
-  label: 'Created By',
-  options: {
-    customBodyRender: (value) => {
-      const safeVal = value.toLowerCase().replace(/\s+/g, '-');
-      return (
-        <span className={`col-date val-${safeVal} text-gray-600`}>
-          {value}
-        </span>
-      );
-    }
-  }
-},
-  {
+    },
+    {
+      name: 'created_by',
+      label: 'Created By',
+      options: {
+        customBodyRenderLite: (dataIndex) => {
+          const rowData = filteredData[dataIndex];
+          const userId = rowData.created_by?.name || "N/A"; // Fallback if null
+          const safeVal = String(userId).toLowerCase().replace(/\s+/g, '-');
+
+          return (
+            <span className={`col-date val-${safeVal} text-gray-600`}>
+              {userId}
+            </span>
+          );
+        }
+      }
+    },
+    {
       name: 'links',
       label: 'Links',
       options: {
@@ -197,30 +228,37 @@ const columns = [
         },
       },
     },
-  {
+    {
       name: 'action',
       label: 'Action',
       options: {
         filter: false,
         sort: false,
         customBodyRenderLite: (dataIndex) => {
-          const rowData = filteredData[dataIndex]; 
+          const rowData = filteredData[dataIndex];
           return (
             <div className='d-flex'>
-            <Icon
-              onClick={() => handleEditPackage(rowData)}
-              className="editBtn hover: cursor-pointer"
-              icon="line-md:edit"
-              width="24"
-              height="24"
-            />
-            <Icon onClick={handleDeletePackage} className="deleteBtn hover: cursor-pointer" icon="material-symbols:delete-outline" width="24" height="24" />
+              <Icon
+                onClick={() => handleEditPackage(rowData)}
+                className="editBtn hover: cursor-pointer"
+                icon="line-md:edit"
+                width="24"
+                height="24"
+              />
+              <DeleteConfirmButton
+                item={{ id: rowData.id, name: rowData.title }}
+                deleteAction={deleteInvoice}
+                className="deleteBtn hover:cursor-pointer"
+                title="Delete Invoice"
+              >
+                <Icon icon="material-symbols:delete-outline" width="24" height="24" />
+              </DeleteConfirmButton>
             </div>
           );
         },
       },
     },
-];
+  ];
 
 
   const options = {
@@ -239,38 +277,36 @@ const columns = [
   return (
     <div className="card basic-data-table">
       <div className="card-header d-flex justify-content-between align-items-center">
-          <div class="tableHeading">
-            <h3 className='fs-3 fw-semibold'>
-              {filter === "all"
-                ? "All Invoices"
-                : "Monthly Invoices"}
-            </h3>
-          </div>
-          <div className="custom-toggle">
-            <div className="toggle-container">
-              <div
-                className={`toggle-indicator ${
-                  filter === "all" ? "right" : "left"
+        <div class="tableHeading">
+          <h3 className='fs-3 fw-semibold'>
+            {filter === "all"
+              ? "All Invoices"
+              : "Monthly Invoices"}
+          </h3>
+        </div>
+        <div className="custom-toggle">
+          <div className="toggle-container">
+            <div
+              className={`toggle-indicator ${filter === "all" ? "right" : "left"
                 }`}
-              />
-              <div
-                className={`toggle-option ${
-                  filter === "monthly" ? "active" : ""
+            />
+            <div
+              className={`toggle-option ${filter === "monthly" ? "active" : ""
                 }`}
-                onClick={() => setFilter("monthly")}
-              >
-                <Icon icon="mdi:account" width="22" />
-                <span>This Month</span>
-              </div>
-              <div
-                className={`toggle-option ${filter === "all" ? "active" : ""}`}
-                onClick={() => setFilter("all")}
-              >
-                <Icon icon="mdi:account-group" width="25" />
-                <span>All Time</span>
-              </div>
+              onClick={() => setFilter("monthly")}
+            >
+              <Icon icon="mdi:account" width="22" />
+              <span>This Month</span>
+            </div>
+            <div
+              className={`toggle-option ${filter === "all" ? "active" : ""}`}
+              onClick={() => setFilter("all")}
+            >
+              <Icon icon="mdi:account-group" width="25" />
+              <span>All Time</span>
             </div>
           </div>
+        </div>
       </div>
       <div className="card-body">
         <MUIDataTable

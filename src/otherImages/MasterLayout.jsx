@@ -5,9 +5,11 @@ import ThemeToggleButton from "../helper/ThemeToggleButton";
 import webLogo from "../otherImages/logo-icon.png"
 import webSideLogo from "../otherImages/logo.svg"
 import profilePic from "../otherImages/profilePic.png"
+import LogoutNavLink from "../components/LogoutNavLink";
+import { useSelector } from 'react-redux';
 
 const MasterLayout = ({ children }) => {
-  const role = localStorage.getItem("role");
+  const role = useSelector((state) => state.auth.role);
   const [sidebarActive, setSidebarActive] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
   const location = useLocation();
@@ -46,8 +48,8 @@ const MasterLayout = ({ children }) => {
           sidebarActive
             ? "sidebar active "
             : mobileMenu
-            ? "sidebar sidebar-open"
-            : "sidebar"
+              ? "sidebar sidebar-open"
+              : "sidebar"
         }
       >
         <button
@@ -73,65 +75,65 @@ const MasterLayout = ({ children }) => {
               src={webSideLogo}
               alt='site logo'
               className='logo-icon'
-              style={{width:"40px",}}
+              style={{ width: "40px", }}
             />
           </Link>
         </div>
         <div className='sidebar-menu-area'>
           <ul className='sidebar-menu' id='sidebar-menu'>
             {role === "admin" && (
-            <>
-              <li>
-                <NavLink to='/dashboard' 
-                className={(navData) =>
-                  navData.isActive ? "active-page" : ""
-                }
-                >
-                  <Icon
-                    icon='hugeicons:dashboard-square-01'
-                    className='menu-icon'
-                    width="23"
-                  />
-                  <span>Dashboard</span>
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to='/manage-clients'
-                  className={(navData) => (navData.isActive ? "active-page" : "")}
-                >
-                  <Icon icon='mdi:account-group' className='menu-icon'width="25" height="25" />
-                  <span>Manage Clients</span>
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to='/manage-packages'
-                  className={(navData) => (navData.isActive ? "active-page" : "")}
-                >
-                  <Icon icon='carbon:trophy' className='menu-icon' width="28" height="28" />
-                  <span>Packages</span>
-                </NavLink>
-              </li>   
-              <li>
-                <NavLink
-                  to='/manage-invoice'
-                  className={(navData) => (navData.isActive ? "active-page" : "")}
-                >
-                  <Icon icon='akar-icons:clipboard' className='menu-icon' width="28" height="28" />
-                  <span>Invoices</span>
-                </NavLink>
-              </li>    
-              <li>
-                <NavLink
-                  to='/login-history'
-                  className={(navData) => (navData.isActive ? "active-page" : "")}
-                >
-                  <Icon icon='teenyicons:briefcase-alt-outline' className='menu-icon' width="23" height="23" style={{marginRight:"10px",}} />
-                  <span>Login Activity</span>
-                </NavLink>
-              </li>       
-            </>
+              <>
+                <li>
+                  <NavLink to='/dashboard'
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <Icon
+                      icon='hugeicons:dashboard-square-01'
+                      className='menu-icon'
+                      width="23"
+                    />
+                    <span>Dashboard</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to='/manage-clients'
+                    className={(navData) => (navData.isActive ? "active-page" : "")}
+                  >
+                    <Icon icon='mdi:account-group' className='menu-icon' width="25" height="25" />
+                    <span>Manage Clients</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to='/manage-packages'
+                    className={(navData) => (navData.isActive ? "active-page" : "")}
+                  >
+                    <Icon icon='carbon:trophy' className='menu-icon' width="28" height="28" />
+                    <span>Packages</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to='/manage-invoice'
+                    className={(navData) => (navData.isActive ? "active-page" : "")}
+                  >
+                    <Icon icon='akar-icons:clipboard' className='menu-icon' width="28" height="28" />
+                    <span>Invoices</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to='/login-history'
+                    className={(navData) => (navData.isActive ? "active-page" : "")}
+                  >
+                    <Icon icon='teenyicons:briefcase-alt-outline' className='menu-icon' width="23" height="23" style={{ marginRight: "10px", }} />
+                    <span>Login Activity</span>
+                  </NavLink>
+                </li>
+              </>
             )}
 
             {role === "client" && (
@@ -165,24 +167,23 @@ const MasterLayout = ({ children }) => {
           </ul>
         </div>
         <div className="bottomSide">
-              <ul>
-                <li>
-                <NavLink
-                  to='#'
-                >
-                  <Icon icon='tabler:building-estate' className='menu-icon' width="28" height="28" />
-                  <span>Help Center</span>
-                </NavLink>
-                </li>
-                <li>
-                 <NavLink
-                  to='/'
-                >
-                  <Icon icon='material-symbols:logout-rounded' className='menu-icon' width="28" height="28" />
-                  <span>Log Out</span>
-                </NavLink>
-                </li>
-              </ul>
+          <ul>
+            <li>
+              <NavLink
+                to='#'
+              >
+                <Icon icon='tabler:building-estate' className='menu-icon' width="28" height="28" />
+                <span>Help Center</span>
+              </NavLink>
+            </li>
+            <li>
+              {/* <NavLink to='/'>
+                <Icon icon='material-symbols:logout-rounded' className='menu-icon' width="28" height="28" />
+                <span>Log Out</span>
+              </NavLink> */}
+              <LogoutNavLink />
+            </li>
+          </ul>
         </div>
       </aside>
 

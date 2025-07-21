@@ -1,173 +1,148 @@
-// ClientForm.jsx
-import { Icon } from '@iconify/react/dist/iconify.js';
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+import { useDispatch } from 'react-redux';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
 import Swal from 'sweetalert2';
-// import axios from 'axios';
+import { Icon } from '@iconify/react';
+import { createClient, cleanupClients } from '../store/slices/clientSlice';
+import { useNavigate } from 'react-router-dom';
 
 const AddClientForm = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({
+  const [showConfirm, setShowConfirm] = useState(false);
+  const fileRef = useRef();
+
+  const initialValues = {
     name: '',
+    username: '',
     email: '',
     phone: '',
     password: '',
-    picture: null,
-  });
-
-  const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    setFormData({
-      ...formData,
-      [name]: files ? files[0] : value,
-    });
+    confirmPassword: '',
+    image: null,
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const validationSchema = Yup.object({
+    name: Yup.string().required('Client name is required'),
+    email: Yup.string().email('Invalid email').required('Email is required'),
+    phone: Yup.string().required('Phone number is required'),
+    password: Yup.string().min(6, 'Minimum 6 characters').required('Password is required'),
+    confirmPassword: Yup.string()
+      .oneOf([Yup.ref('password'), null], 'Passwords must match')
+      .required('Confirm password is required'),
+    image: Yup.mixed().required('Profile picture is required'),
+  });
 
-    const data = new FormData();
-    Object.entries(formData).forEach(([key, value]) => {
-      data.append(key, value);
-    });
-
+  const handleSubmit = async (values, { resetForm }) => {
     try {
-      // Adjust the API URL to your Laravel endpoint
-    //   await axios.post('http://localhost:8000/api/clients', data, {
-    //     headers: {
-    //       'Content-Type': 'multipart/form-data',
-    //     },
-    //   });
 
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Show success alert
+      await dispatch(createClient(values)).unwrap();
       Swal.fire({
         icon: 'success',
         title: 'Client Added Successfully!',
         showConfirmButton: false,
-        timer: 500000,
+        timer: 1500,
       });
-
-      // Reset form
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        password: '',
-        picture: null,
-      });
-
-      document.getElementById('picture').value = '';
+      navigate('/manage-clients'); // Redirect to clients page after success
+      resetForm();
+      if (fileRef.current) fileRef.current.value = '';
     } catch (error) {
-      // Show error alert
       Swal.fire({
         icon: 'error',
         title: 'Oops...',
-        text: 'Something went wrong while adding the client!',
+        text: error || 'Something went wrong while adding the client!',
       });
-
-      console.error('Submit error:', error);
     }
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="container mt-4 mainForm"
-      encType="multipart/form-data"
-    >
-      <div className="mb-3">
-        <label htmlFor="name" className="form-label">
-          Client Name <span>*</span>
-        </label>
-        <input
-          type="text"
-          className="form-control"
-          id="name"
-          name="name"
-          value={formData.name}
-          required
-          onChange={handleChange}
-          placeholder='e.g., "John Doe'
-        />
-      </div>
+    <div className="container mt-4 mainForm">
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={handleSubmit}
+      >
+        {({ setFieldValue }) => (
+          <Form encType="multipart/form-data">
 
-      <div className="row">
-        <div className="col-md-6 mb-3">
-          <label htmlFor="email" className="form-label">
-            Email Address <span>*</span>
-          </label>
-          <input
-            type="email"
-            className="form-control"
-            id="email"
-            name="email"
-            value={formData.email}
-            required
-            onChange={handleChange}
-            placeholder='e.g., "johndoe@gmail.com'
-          />
-        </div>
-        <div className="col-md-6 mb-3">
-          <label htmlFor="phone" className="form-label">
-            Phone Number <span>*</span>
-          </label>
-          <input
-            type="text"
-            className="form-control"
-            id="phone"
-            name="phone"
-            value={formData.phone}
-            required
-            onChange={handleChange}
-            placeholder='e.g., "33304442'
-          />
-        </div>
-      </div>
-        <div className="mb-3 position-relative">
-            <label htmlFor="password" className="form-label">
-                Create Password <span>*</span>
-            </label>
-            <div className="input-group">
-                <input
-                type={showPassword ? 'text' : 'password'}
-                className="form-control"
-                id="password"
-                name="password"
-                value={formData.password}
-                required
-                onChange={handleChange}
-                placeholder='e.g., ******'
-                />
-                <button
-                type="button"
-                className="btn btn-outline-secondary eyeBtn"
-                onClick={() => setShowPassword(!showPassword)}
-                tabIndex={-1}
-                >
-                {showPassword ? <Icon icon="bi:eye-slash-fill"  width="22" height="22" /> : <Icon icon="bi:eye-fill" width="22" height="22" />}
-                </button>
+
+            <div className="row">
+              <div className="col-md-6 mb-3">
+                <label htmlFor="name" className="form-label">Client Name *</label>
+                <Field type="text" name="name" className="form-control" placeholder="e.g., John Doe" />
+                <ErrorMessage name="name" component="div" className="text-danger" />
+              </div>
+
+              <div className="col-md-6 mb-3">
+                <label htmlFor="username" className="form-label">Username *</label>
+                <Field type="text" name="username" className="form-control" placeholder="e.g., johndoe123" />
+                <ErrorMessage name="username" component="div" className="text-danger" />
+              </div>
             </div>
-        </div>
-      <div className="mb-4">
-        <label htmlFor="picture" className="form-label">
-          Upload Picture <span>*</span>
-        </label>
-        <input
-          type="file"
-          className="form-control"
-          id="picture"
-          name="picture"
-          accept="image/*"
-          required
-          onChange={handleChange}
-        />
-      </div>
+            <div className="row">
+              <div className="col-md-6 mb-3">
+                <label htmlFor="email" className="form-label">Email Address *</label>
+                <Field type="email" name="email" className="form-control" placeholder="e.g., johndoe@gmail.com" />
+                <ErrorMessage name="email" component="div" className="text-danger" />
+              </div>
 
-      <button type="submit" className="btn btn-primary">
-        Add Client
-      </button>
-    </form>
+              <div className="col-md-6 mb-3">
+                <label htmlFor="phone" className="form-label">Phone Number *</label>
+                <Field type="text" name="phone" className="form-control" placeholder="e.g., 33304442" />
+                <ErrorMessage name="phone" component="div" className="text-danger" />
+              </div>
+            </div>
+
+            <div className="mb-3 position-relative">
+              <label htmlFor="password" className="form-label">Create Password *</label>
+              <div className="input-group">
+                <Field type={showPassword ? 'text' : 'password'} name="password" className="form-control" placeholder="******" />
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary eyeBtn"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  <Icon icon={showPassword ? "bi:eye-slash-fill" : "bi:eye-fill"} width="22" height="22" />
+                </button>
+              </div>
+              <ErrorMessage name="password" component="div" className="text-danger" />
+            </div>
+
+            <div className="mb-3 position-relative">
+              <label htmlFor="confirmPassword" className="form-label">Confirm Password *</label>
+              <div className="input-group">
+                <Field type={showConfirm ? 'text' : 'password'} name="confirmPassword" className="form-control" placeholder="******" />
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary eyeBtn"
+                  onClick={() => setShowConfirm(!showConfirm)}
+                >
+                  <Icon icon={showConfirm ? "bi:eye-slash-fill" : "bi:eye-fill"} width="22" height="22" />
+                </button>
+              </div>
+              <ErrorMessage name="confirmPassword" component="div" className="text-danger" />
+            </div>
+
+            <div className="mb-4">
+              <label htmlFor="image" className="form-label">Upload Picture *</label>
+              <input
+                type="file"
+                className="form-control"
+                name="image"
+                ref={fileRef}
+                accept="image/*"
+                onChange={(event) => setFieldValue('image', event.currentTarget.files[0])}
+              />
+              <ErrorMessage name="image" component="div" className="text-danger" />
+            </div>
+
+            <button type="submit" className="btn btn-primary">Add Client</button>
+          </Form>
+        )}
+      </Formik>
+    </div>
   );
 };
 

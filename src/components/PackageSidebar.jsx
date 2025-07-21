@@ -2,9 +2,28 @@
 import React from 'react';
 import { Offcanvas, Form, Button, Image } from 'react-bootstrap';
 import DefaultAvatar from '../otherImages/default.png';
+import { useDispatch } from 'react-redux';
+import { assignPackage , sanitizePackages } from '../store/slices/assignedPackagesSlice';
+import Swal from 'sweetalert2';
 
 const PackageSidebar = ({ show, onClose, data }) => {
-  
+  const dispatch = useDispatch();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await dispatch(assignPackage(data.id)).unwrap();
+      Swal.fire({
+        icon: 'success',
+        title: 'Package assigned Successfully!',
+        showConfirmButton: false,
+        timer: 2000,
+      });
+      onClose();
+    } catch (error) {
+      Swal.fire('Error', error || 'Failed to assign package', 'error');
+    }
+  };
   if (!data) return null;
 
   return (
@@ -25,13 +44,13 @@ const PackageSidebar = ({ show, onClose, data }) => {
         <Form>
           <Form.Group className="mb-3">
             <Form.Label>Package Name</Form.Label>
-            <Form.Control type="text" value={data.packageName} readOnly />
+            <Form.Control type="text" value={data.name} readOnly />
           </Form.Group>
 
           <Form.Group className="mb-3">
             <Form.Label>Description</Form.Label>
             <Form.Control as="textarea" rows={3} value={data.description} readOnly />
-          </Form.Group>
+          </Form.Group> 
 
           <Form.Group className="mb-3">
             <Form.Label>Price</Form.Label>
@@ -52,7 +71,7 @@ const PackageSidebar = ({ show, onClose, data }) => {
             <Button className="btn bg-secondary d-flex gap-10 drawerBtn" onClick={onClose} >
               Close
             </Button>
-            <Button className='btn bg-primary text-white d-flex gap-10 drawerBtn'>Pay Now</Button>
+            <Button onClick={handleSubmit} className='btn bg-primary text-white d-flex gap-10 drawerBtn'>Add Package</Button>
           </div>
         </Form>
       </Offcanvas.Body>

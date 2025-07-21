@@ -1,28 +1,56 @@
+import React, { useState, useEffect } from 'react';
 import MUIDataTable from 'mui-datatables';
 import { Icon } from '@iconify/react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import DefaultAvatar from '../otherImages/default.png';
-import DP1 from '../otherImages/dp-1.png';
-import DP2 from '../otherImages/dp-2.png';
-import DP3 from '../otherImages/dp-3.png';
-import DP4 from '../otherImages/dp-4.png';
-import DP5 from '../otherImages/dp-5.png';
-import DP6 from '../otherImages/dp-6.png';
+import LoadingSpinner from '../common/LoadingSpinner';
+import { fetchAssignedPackages, sanitizePackages } from '../store/slices/assignedPackagesSlice';
 
 const MyPackageTable = () => {
-  const packageData = [
-    { id: 'PKG-001', packageName: 'Website Development - Basic', packageImage: DP1, date: '26 May 2025', description: 'Lorem details about what the package includes', price: "750/Monthly", packageDeliverable: ["Logo", "Home Page"], paymentStatus: "In Progress", },
-    { id: 'PKG-002', packageName: 'Website Development - Basic', packageImage: DP2, date: '20 Jun 2025', description: 'Lorem details about what the package includes', price: "1500/Monthy", packageDeliverable: ["Logo", "Home Page", "Inner Pages"], paymentStatus: "Planning", },
-    { id: 'PKG-003', packageName: 'Website Development - Basic', packageImage: DP3, date: '06 July 2025', description: 'Lorem details about what the package includes', price: "1500/Monthy", packageDeliverable: ["Logo", "Home Page", "Inner Pages"], paymentStatus: "Completed", },
-    { id: 'PKG-004', packageName: 'Social Media Package', packageImage: DP4, date: '16 Aug 2025', description: 'Lorem details about what the package includes', price: 500.00, packageDeliverable: ["Logo", "Home Page"], paymentStatus: "Planning", },
-    { id: 'PKG-005', packageName: 'Mobile App Development', packageImage: DP5, date: '12 Sep 2025', description: 'Lorem details about what the package includes', price: 1200.00, packageDeliverable: ["Logo", "Home Page", "Inner Pages"], paymentStatus: "In Progress", },
-    { id: 'PKG-006', packageName: 'Mobile App Development', packageImage: DP6, date: '28 Oct 2025', description: 'Lorem details about what the package includes', price: 5000.00, packageDeliverable: ["Logo", "Home Page"], paymentStatus: "Completed", },
-    { id: 'PKG-007', packageName: 'Website Development - Basic', packageImage: DP1, date: '02 Nov 2025', description: 'Lorem details about what the package includes', price: "1500/Monthy", packageDeliverable: ["Logo", "Home Page", "Inner Pages"], paymentStatus: "Planning", },
-    { id: 'PKG-008', packageName: 'Website Development - Basic', packageImage: DP2, date: '10 Jan 2025', description: 'Lorem details about what the package includes', price: "1500/Monthy", packageDeliverable: ["Logo", "Home Page"], paymentStatus: "In Progress", },
-    { id: 'PKG-009', packageName: 'Website Development - Basic', packageImage: DP3, date: '18 Dec 2025', description: 'Lorem details about what the package includes', price: "1500/Monthy", packageDeliverable: ["Logo", "Home Page"], paymentStatus: "Planning", },
-    { id: 'PKG-010', packageName: 'Social Media Package', packageImage: DP4, date: '21 Jan 2025', description: 'Lorem details about what the package includes', price: 500.00, packageDeliverable: ["Logo", "Home Page"], paymentStatus: "Completed", },
-    { id: 'PKG-011', packageName: 'Mobile App Development', packageImage: DP5, date: '17 Feb 2025', description: 'Lorem details about what the package includes', price: 1200.00, packageDeliverable: ["Logo", "Home Page", "Inner Pages"], paymentStatus: "In Progress", },
-    { id: 'PKG-012', packageName: 'Mobile App Development', packageImage: DP6, date: '08 Jan 2025', description: 'Lorem details about what the package includes', price: 5000.00, packageDeliverable: ["Logo", "Home Page"], paymentStatus: "Completed", },
-  ];
+  const { user } = useSelector((state) => state.auth);
+  const id = user?.id;
+  const dispatch = useDispatch();
+  const { assignedPackages, loading, error } = useSelector((state) => state.assignedPackages);
+  const [filterStatus, setFilterStatus] = useState('');
+  console.log(assignedPackages);
+  useEffect(() => {
+    const fetchAndSanitize = async () => {
+        dispatch(fetchAssignedPackages)
+    };
+
+    fetchAndSanitize();
+  }, [dispatch, id]);
+
+  // Transform API data to match table structure
+  const transformedData = assignedPackages.map(item => ({
+    id: item?.id,
+    packageName: item.package.name,
+    packageImage: DefaultAvatar, // Using default avatar for all
+    date: new Date(item.created_at).toLocaleDateString(),
+    description: item.package.description,
+    price: `$${parseFloat(item.package.price).toFixed(2)}`,
+    packageDeliverable: item.package.deliverables.map(d => d.name),
+    paymentStatus: getStatusText(item.status),
+    rawStatus: item.status,
+    packageDetails: item.package // Keep full package details for potential use
+  }));
+
+  function getStatusText(statusCode) {
+    const statusMap = {
+      '0': 'Planning',
+      '1': 'In Progress',
+      '2': 'Completed'
+    };
+    return statusMap[statusCode] || 'Unknown';
+  }
+
+  const statusColorMap = {
+    'Planning': 'bg-warning',
+    'In Progress': 'bg-info',
+    'Completed': 'bg-success',
+    'Unknown': 'bg-secondary'
+  };
 
   const columns = [
     {
@@ -30,14 +58,10 @@ const MyPackageTable = () => {
       label: 'Package Name',
       options: {
         customBodyRender: (value, tableMeta) => {
+          const rowData = transformedData[tableMeta.rowIndex];
           const safeVal = value.toLowerCase().replace(/\s+/g, '_');
           return (
             <div className={`col-packageName val-${safeVal} d-flex align-items-center gap-8`}>
-              <img
-                style={{ height: "35px", width: "35px", borderRadius: "50%" }}
-                src={packageData[tableMeta.rowIndex].packageImage || DefaultAvatar}
-                alt="package"
-              />
               {value}
             </div>
           );
@@ -51,44 +75,35 @@ const MyPackageTable = () => {
         customBodyRender: (value) => {
           const safeVal = value.toLowerCase().replace(/\s+/g, '-');
           return (
-            <span className={`col-description val-${safeVal}`}>
-              {value}
-            </span>
+            <div
+              className={`col-description val-${safeVal} text-truncate`}
+              style={{ maxWidth: '200px' }}
+              dangerouslySetInnerHTML={{ __html: value }}
+            />
           );
         }
       }
     },
-
     {
-    name: 'packageDeliverable',
-    label: 'Package Deliverables',
-    options: {
+      name: 'packageDeliverable',
+      label: 'Package Deliverables',
+      options: {
         customBodyRender: (value) => {
-        // Check if value is array
-        if (Array.isArray(value)) {
-            return (
-            <div className="d-flex flex-wrap gap-1 col-deli">
-                {value.map((item, index) => (
-                <span
-                    key={index}
-                    className="deli"
-                >
-                    {item}
+          return (
+            <div className="d-flex flex-wrap gap-1 justify-content-center">
+              {value.map((item, index) => (
+                <span key={index} className="badge bg-light text-dark">
+                  {item}
                 </span>
-                ))}
+              ))}
             </div>
-            );
-        } else {
-            // fallback if it's not an array
-            return <span>{value}</span>;
+          );
         }
-        }
-    }
+      }
     },
-
     {
       name: 'date',
-      label: 'Due Date',
+      label: 'Assigned Date',
       options: {
         customBodyRender: (value) => {
           const safeVal = value.toLowerCase().replace(/\s+/g, '-');
@@ -100,24 +115,42 @@ const MyPackageTable = () => {
         }
       }
     },
-
     {
       name: 'paymentStatus',
-      label: 'Payment Status',
+      label: 'Status',
       options: {
         customBodyRender: (value) => {
-          const safeVal = value.toLowerCase().replace(/\s+/g, '-');
+          const colorClass = statusColorMap[value] || 'bg-secondary';
           return (
-            <span className={`col-price val-${safeVal} text-gray-600`}>
+            <span className={`badge ${colorClass} text-white`}>
               {value}
             </span>
           );
+        },
+        filter: true,
+        filterOptions: {
+          names: ['All', 'Planning', 'In Progress', 'Completed'],
+          logic(status, filterVal) {
+            if (filterVal[0] === 'All') return false;
+            return status !== filterVal[0];
+          }
         }
       }
     }
   ];
 
   const options = {
+    setCellHeaderProps: () => ({
+      style: {
+        textAlign: 'center',
+        fontWeight: 'bold'
+      }
+    }),
+    setCellProps: () => ({
+      style: {
+        textAlign: 'center'
+      }
+    }),
     selectableRows: 'none',
     rowsPerPage: 10,
     responsive: 'standard',
@@ -125,15 +158,42 @@ const MyPackageTable = () => {
     print: false,
     download: false,
     viewColumns: false,
-    filter: false,
+    filter: true,
     search: true,
+    textLabels: {
+      body: {
+        noMatch: loading ? <LoadingSpinner /> : error || 'No packages assigned yet',
+      }
+    },
+    customFilterDialogFooter: (currentFilterList, applyNewFilters) => {
+      return (
+        <div style={{ marginTop: '40px' }}>
+          <button onClick={() => applyNewFilters([])}>Reset Filters</button>
+        </div>
+      );
+    }
   };
 
   return (
     <div className="card basic-data-table">
+      <div className="card-header d-flex justify-content-between align-items-center">
+        <h5>My Assigned Packages</h5>
+        <div className="filter-select">
+          <select
+            className="form-select"
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+          >
+            <option value="">All Status</option>
+            <option value="0">Planning</option>
+            <option value="1">In Progress</option>
+            <option value="2">Completed</option>
+          </select>
+        </div>
+      </div>
       <div className="card-body">
         <MUIDataTable
-          data={packageData}
+          data={transformedData}
           columns={columns}
           options={options}
           className="overflow-hidden packageTable"

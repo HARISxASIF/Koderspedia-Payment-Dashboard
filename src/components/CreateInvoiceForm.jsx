@@ -1,271 +1,259 @@
-import { useState } from "react";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
 import ReactQuill from "react-quill-new";
 import Select from 'react-select';
 import Swal from "sweetalert2";
+import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import PackagesService from "../services/packagesService";
+import { useDispatch } from "react-redux";
+import { createInvoice } from "../store/slices/invoiceSlice";
+import InvoiceService from "../services/invoiceService";
+import { Navigate, useNavigate } from "react-router-dom";
+
+const validationSchema = Yup.object({
+  title: Yup.string().required("Invoice Title is required"),
+  price: Yup.number().typeError("Order price must be a number").required("Order price is required"),
+  remaining_price: Yup.number().typeError("Remaining price must be a number").required("Remaining price is required"),
+  client_id: Yup.string().required("client is required"),
+  description: Yup.string().required("Description is required"),
+  category_id: Yup.string().required("Category is required"),
+  payment_type_id: Yup.string().required("Payment Type is required"),
+  sale_type: Yup.string().required("Sale Type is required"),
+});
+
+const initialValues = {
+  title: "",
+  price: "",
+  remaining_price: "",
+  client_id: "",
+  description: "",
+  category_id: "",
+  payment_type_id: "",
+  sale_type: "",
+};
 
 const CreateInvoiceForm = () => {
-  const [formData, setFormData] = useState({
-    invoiceTitle: "",
-    orderAmount: "",
-    remainingAmount: "",
-    customer: "",
-    description: "",
-    category: "",
-    paymentType: "",
-    saleType: "",
-  });
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { clients, loading, error } = useSelector((state) => state.clients);
+  const [categoryOptions, setCategoryOptions] = useState([]);
+  const [loadingCategories, setLoadingCategories] = useState(true);
+  const [clientOptions, setClientOptions] = useState([]);
+  const [loadingClient, setLoadingClients] = useState(true);
+  const [paymentTypeOptions, setPaymentTypeOptions] = useState([]);
+  const [loadingPaymentTypes, setLoadingPaymentTypes] = useState(true);
 
-  const customerOptions = [
-    { value: 'Tim Bertin', label: 'Tim Bertin' },
-    { value: 'Zale Crave', label: 'Zale Crave' },
-    { value: 'Martin Grape', label: 'Martin Grape' },
-    { value: 'Callison', label: 'Callison' },
-  ];
+  useEffect(() => {
+    const fetchPaymentTypes = async () => {
+      try {
+        const response = await InvoiceService.getPaymentTypes();
+        console.log(response);
+        const options = response.data.data.payment_types.map((pt) => ({
+          value: pt.id,
+          label: pt.name,
+        }));
+        setPaymentTypeOptions(options);
+      } catch (error) {
+        console.error('Failed to fetch categories:', error);
+      } finally {
+        setLoadingCategories(false);
+      }
+    };
 
-  const categoryOptions = [
-    { value: 'Koderspedia', label: 'Koderspedia' },
-    { value: 'Webflow Creators', label: 'Webflow Creators' },
-    { value: 'Shopify Web Creators', label: 'Shopify Web Creators' },
-  ];
+    fetchPaymentTypes();
+  }, []);
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await PackagesService.getCategories();
+        const options = response.data.data.categories.map((cat) => ({
+          value: cat.id,
+          label: cat.name,
+        }));
+        setCategoryOptions(options);
+      } catch (error) {
+        console.error('Failed to fetch categories:', error);
+      } finally {
+        setLoadingCategories(false);
+      }
+    };
 
-  const paymentTypeOptions = [
-    { value: 'Stripe', label: 'Stripe' },
-    { value: 'Paypal', label: 'Paypal' },
-    { value: 'Zelle', label: 'Zelle' },
-    { value: 'Sqaure', label: 'Sqaure' },
-  ];
+    fetchCategories();
+  }, []);
+  useEffect(() => {
+    const fetchClients = async () => {
+      try {
+        const options = clients.map((cat) => ({
+          value: cat.id,
+          label: cat.name,
+        }));
+        setClientOptions(options);
+      } catch (error) {
+        console.error('Failed to fetch Clients:', error);
+      } finally {
+        setLoadingClients(false);
+      }
+    };
 
-  const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    setFormData({
-      ...formData,
-      [name]: files ? files[0] : value,
-    });
-  };
-
-  const handleQuillChange = (value) => {
-    setFormData((formData) => ({
-      ...formData,
-      description: value,
-    }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const data = new FormData();
-    Object.entries(formData).forEach(([key, value]) => {
-      data.append(key, value);
-    });
-
+    fetchClients();
+  }, []);
+  const handleSubmit = async (values, { resetForm }) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Show success alert
+      await dispatch(createInvoice(values)).unwrap();
       Swal.fire({
         icon: "success",
         title: "Invoice Created Successfully!",
         showConfirmButton: false,
         timer: 2000,
       });
-
-      // Reset form
-      setFormData({
-        invoiceTitle: "",
-        orderAmount: "",
-        remainingAmount: "",
-        customer: "",
-        description: "",
-        category: "",
-        paymentType: "",
-        saleType: "",
-      });
-
-      console.log(formData, ">> Formdata");
+      resetForm();
+      navigate('/manage-invoice');
     } catch (error) {
-      // Show error alert
       Swal.fire({
         icon: "error",
         title: "Oops...",
         text: "Something went wrong while creating the invoice!",
       });
-
       console.error("Submit error:", error);
     }
   };
 
   return (
-    <form
+    <Formik
+      initialValues={initialValues}
+      validationSchema={validationSchema}
       onSubmit={handleSubmit}
-      className="container mt-4 mainForm"
-      encType="multipart/form-data"
     >
-      <div className="mb-3">
-        <label htmlFor="invoiceTitle" className="form-label">
-          Invoice Title <span>*</span>
-        </label>
-        <input
-          type="text"
-          className="form-control"
-          id="invoiceTitle"
-          name="invoiceTitle"
-          value={formData.invoiceTitle}
-          required
-          onChange={handleChange}
-        />
-      </div>
-      <div className="row">
-        <div className="mb-3 col-md-6">
-          <label htmlFor="orderAmount" className="form-label">
-            Order Amount ($) <span>*</span>
-          </label>
-          <input
-            type="text"
-            className="form-control"
-            id="orderAmount"
-            name="orderAmount"
-            value={formData.orderAmount}
-            required
-            onChange={handleChange}
-          />
-        </div>
-        <div className="mb-3 col-md-6">
-          <label htmlFor="remainingAmount" className="form-label">
-            Remaining Amount ($) <span>*</span>
-          </label>
-          <input
-            type="text"
-            className="form-control"
-            id="remainingAmount"
-            name="remainingAmount"
-            value={formData.remainingAmount}
-            required
-            onChange={handleChange}
-          />
-        </div>
-      </div>
-      <div className="mb-20">
-        <label htmlFor="customer" className="form-label">
-          Customer <span>*</span>
-        </label>
-        <Select
-          name="customer"
-          id="customer"
-          required
-          options={customerOptions}
-          value={customerOptions.find(opt => opt.value === formData.customer)}
-          onChange={(selectedOption) =>
-            setFormData(prev => ({ ...prev, customer: selectedOption.value }))
-          }
-          placeholder="Select a customer"
-          isSearchable
-        />
-      </div>
-
-      <div className=" mb-3">
-        <label htmlFor="description" className="form-label">
-          Description <span>*</span>
-        </label>
-        <ReactQuill
-          theme="snow"
-          value={formData.description}
-          onChange={handleQuillChange}
-          placeholder="Details about what the package includes"
-          id="description"
-          name="description"
-        />
-      </div>
-      <div className="mb-20">
-        <label htmlFor="category" className="form-label">
-          Category <span>*</span>
-        </label>
-        <Select
-          name="category"
-          id="category"
-          required
-          options={categoryOptions}
-          value={categoryOptions.find(opt => opt.value === formData.category)}
-          onChange={(selectedOption) =>
-            setFormData(prev => ({ ...prev, category: selectedOption.value }))
-          }
-          placeholder="Select a category"
-          isSearchable
-        />
-      </div>
-      <div className="mb-3">
-        <label htmlFor="paymentType" className="form-label">
-          Payment Type <span>*</span>
-        </label>
-        <Select
-          name="paymentType"
-          id="paymentType"
-          required
-          options={paymentTypeOptions}
-          value={paymentTypeOptions.find(opt => opt.value === formData.paymentType)}
-          onChange={(selectedOption) =>
-            setFormData(prev => ({ ...prev, paymentType: selectedOption.value }))
-          }
-          placeholder="Select a payment type"
-          isSearchable
-        />
-      </div>
-      <div className="mb-3">
-        <label className="form-label">
-          Sale Type <span>*</span>
-        </label>
-        <div>
-          <div className="form-check form-check-inline">
-            <input
-              className="form-check-input"
-              type="radio"
-              name="saleType"
-              id="freshSale"
-              value="Fresh Sale"
-              checked={formData.saleType === "Fresh Sale"}
-              onChange={handleChange}
-            />
-            <label className="form-check-label" htmlFor="freshSale">
-              Fresh Sale
+      {({ values, setFieldValue }) => (
+        <Form className="container mt-4 mainForm" encType="multipart/form-data">
+          <div className="mb-3">
+            <label htmlFor="title" className="form-label">
+              Invoice Title <span>*</span>
             </label>
-          </div>
-          <div className="form-check form-check-inline">
-            <input
-              className="form-check-input"
-              type="radio"
-              name="saleType"
-              id="upsell"
-              value="Upsell"
-              checked={formData.saleType === "Upsell"}
-              onChange={handleChange}
-              required
+            <Field
+              type="text"
+              className="form-control"
+              id="title"
+              name="title"
             />
-            <label className="form-check-label" htmlFor="upsell">
-              Upsell
-            </label>
+            <ErrorMessage name="title" component="div" className="text-danger" />
           </div>
-
-          <div className="form-check form-check-inline">
-            <input
-              className="form-check-input"
-              type="radio"
-              name="saleType"
-              id="followUp"
-              value="Follow Up"
-              checked={formData.saleType === "Follow Up"}
-              onChange={handleChange}
+          <div className="row">
+            <div className="mb-3 col-md-6">
+              <label htmlFor="price" className="form-label">
+                Order price ($) <span>*</span>
+              </label>
+              <Field
+                type="text"
+                className="form-control"
+                id="price"
+                name="price"
+              />
+              <ErrorMessage name="price" component="div" className="text-danger" />
+            </div>
+            <div className="mb-3 col-md-6">
+              <label htmlFor="remaining_price" className="form-label">
+                Remaining price ($) <span>*</span>
+              </label>
+              <Field
+                type="text"
+                className="form-control"
+                id="remaining_price"
+                name="remaining_price"
+              />
+              <ErrorMessage name="remaining_price" component="div" className="text-danger" />
+            </div>
+          </div>
+          <div className="mb-20">
+            <label htmlFor="client" className="form-label">
+              client <span>*</span>
+            </label>
+            <Select
+              name="client_id"
+              id="client"
+              options={clientOptions}
+              value={clientOptions.find(opt => opt.value === values.client_id)}
+              onChange={option => setFieldValue("client_id", option ? option.value : "")}
+              placeholder="Select a client"
+              isSearchable
             />
-            <label className="form-check-label" htmlFor="followUp">
-              Follow Up
-            </label>
+            <ErrorMessage name="client" component="div" className="text-danger" />
           </div>
-        </div>
-      </div>
-
-      <button type="submit" className="btn btn-primary">
-        Add
-      </button>
-    </form>
+          <div className="mb-3">
+            <label htmlFor="description" className="form-label">
+              Description <span>*</span>
+            </label>
+            <ReactQuill
+              theme="snow"
+              value={values.description}
+              onChange={val => setFieldValue("description", val)}
+              placeholder="Details about what the package includes"
+              id="description"
+              name="description"
+            />
+            <ErrorMessage name="description" component="div" className="text-danger" />
+          </div>
+          <div className="mb-20">
+            <label htmlFor="category" className="form-label">
+              Category <span>*</span>
+            </label>
+            <Select
+              name="category_id"
+              id="category"
+              options={categoryOptions}
+              value={categoryOptions.find(opt => opt.value === values.category_id)}
+              onChange={option => setFieldValue("category_id", option ? option.value : "")}
+              placeholder="Select a category"
+              isSearchable
+            />
+            <ErrorMessage name="category" component="div" className="text-danger" />
+          </div>
+          <div className="mb-3">
+            <label htmlFor="payment_type" className="form-label">
+              Payment Type <span>*</span>
+            </label>
+            <Select
+              name="payment_type_id"
+              id="payment_type"
+              options={paymentTypeOptions}
+              value={paymentTypeOptions.find(opt => opt.value === values.payment_type_id)}
+              onChange={option => setFieldValue("payment_type_id", option ? option.value : "")}
+              placeholder="Select a payment type"
+              isSearchable
+            />
+            <ErrorMessage name="payment_type" component="div" className="text-danger" />
+          </div>
+          <div className="mb-3">
+            <label className="form-label">
+              Sale Type <span>*</span>
+            </label>
+            <div>
+              {["Fresh Sale", "Upsell", "Follow Up"].map(type => (
+                <div className="form-check" key={type}>
+                  <Field
+                    className="form-check-input"
+                    type="radio"
+                    name="sale_type"
+                    id={type.replace(" ", "")}
+                    value={type}
+                  />
+                  <label className="form-check-label" htmlFor={type.replace(" ", "")}>
+                    {type}
+                  </label>
+                </div>
+              ))}
+            </div>
+            <ErrorMessage name="sale_type" component="div" className="text-danger" />
+          </div>
+          <button type="submit" className="btn btn-primary">
+            Add
+          </button>
+        </Form>
+      )}
+    </Formik>
   );
 };
 
 export default CreateInvoiceForm;
+// ...existing code...

@@ -1,178 +1,166 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
 import Swal from 'sweetalert2';
 import ReactQuill from 'react-quill';
+import Select from 'react-select';
 import 'react-quill/dist/quill.snow.css';
+import PackagesService from '../services/packagesService';
+
+const validationSchema = Yup.object().shape({
+  name: Yup.string().required('Package name is required'),
+  description: Yup.string().required('Description is required'),
+  price: Yup.number().required('Price is required'),
+  category_id: Yup.number().required('Category is required'),
+  additional_notes: Yup.string().required('Additional notes are required'),
+  document: Yup.mixed().nullable(),
+});
 
 const EditPackageForm = () => {
+  const navigate = useNavigate();
   const { state } = useLocation();
   const packageData = state?.package;
-
-  const [formData, setFormData] = useState({
-    packageName: '',
-    desc: '',
+  console.log('packageData:', packageData);
+  const [categoryOptions, setCategoryOptions] = useState([]);
+  const [initialValues, setInitialValues] = useState({
+    name: '',
+    description: '',
     price: '',
-    additionalNotes: '',
-    upload: '',
-    // packageType: '',
+    additional_notes: '',
+    document: null,
+    category_id: '',
   });
 
+  // Fetch categories from backend
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await PackagesService.getCategories();
+        const categories = res.data.data.categories || [];
+        const options = categories.map(cat => ({
+          value: cat.id,
+          label: cat.name,
+        }));
+        setCategoryOptions(options);
+      } catch (err) {
+        console.error('Error loading categories:', err);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  // Set initial form values from packageData
   useEffect(() => {
     if (packageData) {
-      setFormData({
-        packageName: packageData.packageName || '',
-        desc: packageData.description || '',
+      setInitialValues({
+        name: packageData.name || '',
+        description: packageData.description || '',
         price: packageData.price || '',
-        additionalNotes: '',
-        upload: '',
-        // packageType: packageData.packageType?.charAt(0).toUpperCase() + packageData.packageType?.slice(1).toLowerCase() || '',
+        additional_notes: packageData.additional_notes || '',
+        document: null,
+        category_id: Number(packageData.category_id) || '',
       });
     }
-  }, [packageData]);
+  }, [packageData, categoryOptions]);
 
-  useEffect(() => {
-    console.log(formData);
-  }, [formData]);
+  const handleSubmit = async (values, { setSubmitting }) => {
+    try {
+      await PackagesService.update(packageData.id, values);
 
-  const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      [name]: files ? files[0] : value,
-    }));
-  };
-
-  const handleQuillChange = (value) => {
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      desc: value,
-    }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    Swal.fire({
-      icon: 'success',
-      title: 'Package Updated Successfully!',
-      showConfirmButton: false,
-      timer: 2000,
-    });
-
-    // Reset form
-    // setFormData({
-    //   packageName: '',
-    //   desc: '',
-    //   price: '',
-    //   packageType: '',
-    // });
+      Swal.fire({
+        icon: 'success',
+        title: 'Package Updated Successfully!',
+        showConfirmButton: false,
+        timer: 2000,
+      });
+      navigate('/manage-packages'); // Redirect to manage packages page after success
+    } catch (error) {
+      console.error('Update error:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Something went wrong while updating the package!',
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="container mt-4 mainForm">
-      <div className="mb-3">
-        <label htmlFor="packageName" className="form-label">
-          Package Name <span>*</span>
-        </label>
-        <input
-          type="text"
-          className="form-control"
-          id="packageName"
-          name="packageName"
-          value={formData.packageName}
-          required
-          onChange={handleChange}
-          placeholder='e.g., "Website Development - Basic"'
-        />
-      </div>
+    <div className="container mt-4 mainForm">
+      <Formik
+        enableReinitialize
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={handleSubmit}
+      >
+        {({ values, setFieldValue, isSubmitting }) => (
+          <Form encType="multipart/form-data">
+            <div className="mb-3">
+              <label htmlFor="name" className="form-label">Package Name <span>*</span></label>
+              <Field type="text" name="name" className="form-control" />
+              <ErrorMessage name="name" component="div" className="text-danger" />
+            </div>
 
-      <div className="mb-3">
-        <label htmlFor="desc" className="form-label">
-          Description <span>*</span>
-        </label>
-        <ReactQuill
-          theme="snow"
-          value={formData.desc}
-          onChange={handleQuillChange}
-          placeholder="Details about what the package includes"
-        />
-      </div>
+            <div className="mb-3">
+              <label htmlFor="description" className="form-label">Description <span>*</span></label>
+              <ReactQuill
+                theme="snow"
+                value={values.description}
+                onChange={(value) => setFieldValue('description', value)}
+                placeholder="Details about what the package includes"
+              />
+              <ErrorMessage name="description" component="div" className="text-danger" />
+            </div>
 
-      <div className="mb-3">
-        <label htmlFor="price" className="form-label">
-          Price ($USD) <span>*</span>
-        </label>
-        <input
-          type="text"
-          className="form-control"
-          id="price"
-          name="price"
-          value={formData.price}
-          required
-          onChange={handleChange}
-          placeholder="e.g., $500"
-        />
-      </div>
+            <div className="mb-3">
+              <label htmlFor="category_id" className="form-label">Category <span>*</span></label>
+              <Select
+                name="category_id"
+                options={categoryOptions}
+                placeholder="Select a category"
+                value={categoryOptions.find(opt => opt.value === values.category_id) || null}
+                onChange={(selectedOption) =>
+                  setFieldValue('category_id', selectedOption ? selectedOption.value : '')
+                }
+              />
+              <ErrorMessage name="category_id" component="div" className="text-danger" />
+            </div>
 
-      <div class="row">
-        <div class="col-md-6 mb-3">
-          <label htmlFor="notes" className="form-label">
-          Additional Notes
-          </label>
-          <input
-            type="text"
-            className="form-control"
-            id="notes"
-            name="notes"
-            onChange={handleChange}
-            placeholder="Lorem ispum"
-          />
-        </div>
+            <div className="mb-3">
+              <label htmlFor="price" className="form-label">Price ($USD) <span>*</span></label>
+              <Field type="number" name="price" className="form-control" />
+              <ErrorMessage name="price" component="div" className="text-danger" />
+            </div>
 
-        <div class="col-md-6 mb-3">
-          <label htmlFor="upload" className="form-label">
-          Upload Scope of Work / Document <span>*</span>
-          </label>
-          <input
-            type="file"
-            className="form-control"
-            id="upload"
-            name="document"
-            accept=".pdf,.doc,.docx,.jpg,.png"  // Optional: file type restrictions
-            required
-            onChange={handleChange}
-          />
-        </div>
-      </div>
+            <div className="row">
+              <div className="col-md-6 mb-3">
+                <label htmlFor="additional_notes" className="form-label">Additional Notes</label>
+                <Field type="text" name="additional_notes" className="form-control" />
+              </div>
 
+              <div className="col-md-6 mb-3">
+                <label htmlFor="document" className="form-label">Upload New Document</label>
+                <input
+                  type="file"
+                  name="document"
+                  className="form-control"
+                  accept=".pdf,.doc,.docx,.jpg,.png"
+                  onChange={(e) => setFieldValue('document', e.currentTarget.files[0])}
+                />
+                <ErrorMessage name="document" component="div" className="text-danger" />
+              </div>
+            </div>
 
-        {/* <div className="mb-4 col-md-6">
-          <label htmlFor="packageType" className="form-label">
-            Package Type <span>*</span>
-          </label>
-          <select
-            name="packageType"
-            id="packageType"
-            className="form-control"
-            value={formData.packageType}
-            required
-            onChange={handleChange}
-          >
-            <option value="">Select a package type</option>
-            <option value="Website">Website</option>
-            <option value="App">App</option>
-            <option value="Social media">Social Media</option>
-            <option value="Seo">SEO</option>
-          </select>
-        </div>
-      </div> */}
-
-      <button type="submit" className="btn btn-primary">
-        Save Changes
-      </button>
-    </form>
+            <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
+              {isSubmitting ? 'Updating...' : 'Save Changes'}
+            </button>
+          </Form>
+        )}
+      </Formik>
+    </div>
   );
 };
 

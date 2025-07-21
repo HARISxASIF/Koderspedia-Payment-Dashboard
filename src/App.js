@@ -15,10 +15,11 @@ import ManageInvoices from "./adminPages/ManageInvoices";
 import CreateInvoicePage from "./adminPages/CreateInvoicePage";
 import LoginHistoryPage from "./adminPages/LoginHistoryPage";
 import ClientPackagesPage from "./clientPages/ClientPackagesPage";
-import ProtectedRoute from "./components/ProtectedRoute";
+import ProtectedRoute from "./common/ProtectedRoute";
 import MyPackagesPage from "./clientPages/MyPackagesPage";
 import PaymentHistoryPage from "./clientPages/PaymentHistoryPage";
 import EditProfilePage from "./clientPages/EditProfilePage";
+import EditInvoicePage from "./adminPages/EditInvoicePage";
 
 function App() {
 
@@ -39,8 +40,9 @@ function App() {
         <Route path='/manage-packages' element={<ProtectedRoute element={ManagePackages} allowedRole="admin" />} />
         <Route path='/add-client' element={<ProtectedRoute element={AddClientPage} allowedRole="admin" />} />
         <Route path='/add-package' element={<ProtectedRoute element={AddPackagePage} allowedRole="admin" />} />
-        <Route path='/edit-package' element={<ProtectedRoute element={EditPackagePage} allowedRole="admin" />} />
-        <Route path='/edit-client' element={<ProtectedRoute element={EditClientPage} allowedRole="admin" />} />
+        <Route path='/edit-package/:id' element={<ProtectedRoute element={EditPackagePage} allowedRole="admin" />} />
+        <Route path='/edit-client/:id' element={<ProtectedRoute element={EditClientPage} allowedRole="admin" />} />
+        <Route path='/edit-invoice/:id' element={<ProtectedRoute element={EditInvoicePage} allowedRole="admin" />} />
         <Route path='/manage-invoice' element={<ProtectedRoute element={ManageInvoices} allowedRole="admin" />} />
         <Route path='/create-invoice' element={<ProtectedRoute element={CreateInvoicePage} allowedRole="admin" />} />
         <Route path='/login-history' element={<ProtectedRoute element={LoginHistoryPage} allowedRole="admin" />} />

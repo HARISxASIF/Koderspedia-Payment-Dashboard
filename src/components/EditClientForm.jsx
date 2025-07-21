@@ -1,247 +1,279 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import Swal from 'sweetalert2';
+import React, { useEffect, useRef, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
 import Select from 'react-select';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
-import dp1 from "../otherImages/dp-1.png";
+import Swal from 'sweetalert2';
+import { updateClient } from '../store/slices/clientSlice';
+import { fetchPackages } from '../store/slices/packagesSlice';
+import ClientService from '../services/clientService';
+
+const validationSchema = Yup.object().shape({
+  name: Yup.string().required('Client name is required'),
+  email: Yup.string().email('Invalid email').required('Email is required'),
+  phone: Yup.string().required('Phone number is required'),
+});
 
 const EditClientForm = () => {
   const { state } = useLocation();
   const clientData = state?.client;
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const [formData, setFormData] = useState({
-    clientName: '',
-    email: '',
-    phone: '',
-    assignedPackages: '',
-    paymentStatus: '',
-    packageDeliverables: '',
-    clientImage: null, 
-  });
+  const [assignedPackagesList, setAssignedPackagesList] = useState([]);
+  const [selectedPackageDetails, setSelectedPackageDetails] = useState(null);
 
-  const packageOptions = [
-    { value: 'Website development - basic', label: 'Website Development - Basic' },
-    { value: 'Mobile application', label: 'Mobile Application' },
-    { value: 'Social media management', label: 'Social Media Management' },
-    { value: 'Website development', label: 'Website Development' },
-  ];
+  const formikSetFieldValueRef = useRef(null); // ✅ To store setFieldValue outside Formik
+  const formikValuesRef = useRef(null); // ✅ To check if already set
 
-  const paymentOptions = [
-    { value: 'Recieved', label: 'Recieved' },
-    { value: 'Pending', label: 'Pending' },
-    { value: 'Cancelled', label: 'Cancelled' },
-  ];
-
-  const deliverableOptions = [
-    { value: 'Logo', label: 'Logo' },
-    { value: 'Home page', label: 'Home Page' },
-    { value: 'Inner pages', label: 'Inner Pages' },
-  ];
+  const { packages } = useSelector((state) => state.packages);
 
   useEffect(() => {
-    if (clientData) {
-      setFormData({
-        clientName: clientData.clientName || '',
-        email: clientData.email || '',
-        phone: clientData.phone || '',
-        assignedPackages: clientData.assignedPackages?.charAt(0).toUpperCase() + clientData.assignedPackages?.slice(1).toLowerCase() || '',
-        paymentStatus: clientData.paymentStatus || '',
-        packageDeliverables: clientData.packageDeliverables || '',
-        clientImage: clientData.clientImage,
-      });
+    dispatch(fetchPackages());
+  }, [dispatch]);
+
+  useEffect(() => {
+    const fetchAssignedPackages = async () => {
+      try {
+        const res = await ClientService.assignedPackages(clientData.id);
+        setAssignedPackagesList(res.data.data.assigned_packages);
+      } catch (err) {
+        console.error("Failed to fetch assigned packages", err);
+      }
+    };
+
+    if (clientData?.id) {
+      fetchAssignedPackages();
     }
   }, [clientData]);
 
+  // ✅ Hook that safely sets default assigned package
   useEffect(() => {
-    console.log(formData);
-  }, [formData]);
+    if (
+      assignedPackagesList.length > 0 &&
+      formikSetFieldValueRef.current &&
+      !formikValuesRef.current?.assignedPackages
+    ) {
+      const defaultPackage = assignedPackagesList[0];
+      const pkgOption = {
+        value: defaultPackage.package.id,
+        label: defaultPackage.package.name,
+        package: defaultPackage.package,
+        status: defaultPackage.status,
+      };
+      formikSetFieldValueRef.current("assignedPackages", pkgOption);
+      setSelectedPackageDetails(pkgOption);
+    }
+  }, [assignedPackagesList]);
 
-  const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      [name]: files ? files[0] : value,
-    }));
+  const packageOptions = packages.map(pkg => ({
+    value: pkg.id,
+    label: pkg.name,
+  }));
+
+
+
+  const initialValues = {
+    name: clientData?.name || '',
+    email: clientData?.email || '',
+    phone: clientData?.phone || '',
+    image_url: clientData?.image_url || '',
+    image: null,
+    assignedPackages: null,
+    package_id: null,
   };
 
-//   const handleQuillChange = (value) => {
-//     setFormData((prevFormData) => ({
-//       ...prevFormData,
-//       desc: value,
-//     }));
-//   };
+  const handleSubmit = async (values, { setSubmitting }) => {
+    try {
+      await dispatch(updateClient({ id: clientData.id, clientData: values })).unwrap();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    Swal.fire({
-      icon: 'success',
-      title: 'Client Updated Successfully!',
-      showConfirmButton: false,
-      timer: 2000,
-    });
-
-    // Reset form
-    // setFormData({
-    //   packageName: '',
-    //   desc: '',
-    //   price: '',
-    //   packageType: '',
-    // });
+      Swal.fire({
+        icon: 'success',
+        title: 'Client Updated Successfully!',
+        showConfirmButton: false,
+        timer: 2000,
+      });
+      navigate('/manage-clients');
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: error.data.message || 'Failed to update client',
+      });
+      console.error(error);
+    } finally {
+      setSubmitting(false);
+    }
   };
+
 
   return (
-    <form onSubmit={handleSubmit} className="container mt-4 mainForm">
-        <div className="imageEdit text-center mb-4">
-    <img
-        src={
-            formData.clientImage instanceof File
-      ? URL.createObjectURL(formData.clientImage)
-      : formData.clientImage || dp1
-        }
-        alt="clientImage"
-        className="rounded-circle"
-        style={{ width: '100px', height: '100px', objectFit: 'cover',boxShadow: '1px 1px 10px #00000036', }}
-    />
-    <input
-        type="file"
-        id="clientImageInput"
-        name="clientImage"
-        accept="image/*"
-        onChange={handleChange}
-        hidden
-    />
-    <label
-        htmlFor="clientImageInput"
-        className="position-absolute"
-        style={{
-            bottom: "0px",
-            right: 'calc(0% - 0px)', 
-            background: '#1d1d4e',
-            borderRadius: '50%',
-            padding: '10px',
-            cursor: 'pointer',
-            boxShadow: '0 0 0 4px white',
-            fontSize: '0px',
-        }}
+    <Formik
+      initialValues={initialValues}
+      validationSchema={validationSchema}
+      onSubmit={handleSubmit}
+      enableReinitialize
     >
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" className="bi bi-pencil" viewBox="0 0 16 16">
-        <path d="M12.146.854a.5.5 0 0 1 .708 0l2.292 2.292a.5.5 0 0 1 0 .708l-9.5 9.5a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l9.5-9.5zM11.207 2L3 10.207V11h.793L13 2.793 11.207 2zM14 3.5 12.5 2 13 1.5 14.5 3 14 3.5z"/>
-        </svg>
-    </label>
-    </div>
+      {({ values, setFieldValue, isSubmitting, handleBlur }) => {
+        // Store refs for useEffect
+        formikSetFieldValueRef.current = setFieldValue;
+        formikValuesRef.current = values;
 
-         <div className="mb-3">
-        <label htmlFor="clientName" className="form-label">
-          Client Name <span>*</span>
-        </label>
-        <input
-          type="text"
-          className="form-control"
-          id="clientName"
-          name="clientName"
-          value={formData.clientName}
-          required
-          onChange={handleChange}
-          placeholder='e.g., "John Doe'
-        />
-      </div>
+        return (
+          <Form className="container mt-4 mainForm">
+            {/* Image Upload */}
+            <div className="imageEdit text-center mb-4">
+              <img
+                src={values.image_url}
+                alt="clientImage"
+                className="rounded-circle"
+                style={{
+                  width: '100px',
+                  height: '100px',
+                  objectFit: 'cover',
+                  boxShadow: '1px 1px 10px #00000036',
+                }}
+              />
+              <input
+                type="file"
+                id="clientImageInput"
+                name="image"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.currentTarget.files[0];
+                  if (file) {
+                    setFieldValue("image", file);
+                    setFieldValue("image_url", URL.createObjectURL(file));
+                  }
+                }}
+                hidden
+              />
+              <label
+                htmlFor="clientImageInput"
+                className="position-absolute"
+                style={{
+                  bottom: "0px",
+                  right: 'calc(0% - 0px)',
+                  background: '#1d1d4e',
+                  borderRadius: '50%',
+                  padding: '10px',
+                  cursor: 'pointer',
+                  boxShadow: '0 0 0 4px white',
+                }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" className="bi bi-pencil" viewBox="0 0 16 16">
+                  <path d="M12.146.854a.5.5 0 0 1 .708 0l2.292 2.292a.5.5 0 0 1 0 .708l-9.5 9.5a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l9.5-9.5zM11.207 2L3 10.207V11h.793L13 2.793 11.207 2zM14 3.5 12.5 2 13 1.5 14.5 3 14 3.5z" />
+                </svg>
+              </label>
+            </div>
 
-      <div className="row">
-        <div className="col-md-6 mb-3">
-          <label htmlFor="email" className="form-label">
-            Email Address <span>*</span>
-          </label>
-          <input
-            type="email"
-            className="form-control"
-            id="email"
-            name="email"
-            value={formData.email}
-            required
-            onChange={handleChange}
-            placeholder='e.g., "johndoe@gmail.com'
-          />
-        </div>
-        <div className="col-md-6 mb-3">
-          <label htmlFor="phone" className="form-label">
-            Phone Number <span>*</span>
-          </label>
-          <input
-            type="text"
-            className="form-control"
-            id="phone"
-            name="phone"
-            value={formData.phone}
-            required
-            onChange={handleChange}
-            placeholder='e.g., "33304442'
-          />
-        </div>
-      </div>
-      <div className="mb-4">
-          <label htmlFor="assignedPackages" className="form-label">
-            Assigned Package <span>*</span>
-          </label>
-          <Select
-            id="assignedPackages"
-            name="assignedPackages"
-            required
-            options={packageOptions}
-            value={packageOptions.find(opt => opt.value === formData.assignedPackages)}
-            onChange={(selectedOption) =>
-              setFormData(prev => ({ ...prev, assignedPackages: selectedOption.value }))
-            }
-            isSearchable
-            isMulti
-            placeholder="Select a package"
-          />
-        </div>
-        <div className="row mt-20">
-        <div className="mb-4 col-md-6">
-          <label htmlFor="paymentStatus" className="form-label">
-            Payment Status <span>*</span>
-          </label>
-          <Select
-           id="paymentStatus"
-            name="paymentStatus"
-            required
-            options={paymentOptions}
-            value={paymentOptions.find(opt => opt.value === formData.paymentStatus)}
-            onChange={(selectedOption) =>
-              setFormData(prev => ({ ...prev, paymentStatus: selectedOption.value }))
-            }
-            isSearchable
-            placeholder="Select payment status"
-          />
-        </div>
-        <div className="mb-4 col-md-6">
-          <label htmlFor="packageDeliverables" className="form-label">
-            Package Deliverables <span>*</span>
-          </label>
-          <Select
-            id="packageDeliverables"
-            name="packageDeliverables"
-            required
-            options={deliverableOptions}
-            value={deliverableOptions.find(opt => opt.value === formData.packageDeliverables)}
-            onChange={(selectedOption) =>
-              setFormData(prev => ({ ...prev, packageDeliverables: selectedOption.value }))
-            }
-            isSearchable
-            isMulti
-            placeholder="Select deliverables"
-          />
-        </div>
-      </div>
+            {/* Client Info */}
+            <div className="mb-3">
+              <label htmlFor="name" className="form-label">Client Name <span>*</span></label>
+              <Field type="text" className="form-control" id="name" name="name" />
+              <ErrorMessage name="name" component="div" className="text-danger" />
+            </div>
 
-      <button type="submit" className="btn btn-primary">
-        Save Changes
-      </button>
-    </form>
+            <div className="row">
+              <div className="col-md-6 mb-3">
+                <label htmlFor="email" className="form-label">Email Address <span>*</span></label>
+                <Field type="email" className="form-control" id="email" name="email" />
+                <ErrorMessage name="email" component="div" className="text-danger" />
+              </div>
+              <div className="col-md-6 mb-3">
+                <label htmlFor="phone" className="form-label">Phone Number <span>*</span></label>
+                <Field type="text" className="form-control" id="phone" name="phone" />
+                <ErrorMessage name="phone" component="div" className="text-danger" />
+              </div>
+            </div>
+
+            {/* Assigned Packages */}
+            <div className="mb-4">
+              <label htmlFor="assignedPackages" className="form-label">Assigned Package <span>*</span></label>
+              <Select
+                id="assignedPackages"
+                name="assignedPackages"
+                options={assignedPackagesList.map(pkg => ({
+                  value: pkg.package.id,
+                  label: pkg.package.name,
+                  package: pkg.package,
+                  status: pkg.status,
+                }))}
+                value={values.assignedPackages}
+                onChange={(selected) => {
+                  setFieldValue("assignedPackages", selected);
+                  setSelectedPackageDetails(selected);
+                }}
+                isSearchable
+                placeholder="Select a package"
+              />
+              <ErrorMessage name="assignedPackages" component="div" className="text-danger" />
+            </div>
+
+            {/* Status & Deliverables */}
+            <div className="row mt-20">
+              <div className="mb-4 col-md-6">
+                <label htmlFor="paymentStatus" className="form-label">Payment Status</label>
+                <Field
+                  type="text"
+                  name="paymentStatus"
+                  id="paymentStatus"
+                  className="form-control"
+                  value={
+                    selectedPackageDetails?.status === "0"
+                      ? "Pending"
+                      : selectedPackageDetails?.status === "1"
+                        ? "Paid"
+                        : ""
+                  }
+                  onChange={() => { }}
+                />
+              </div>
+
+              <div className="mb-4 col-md-6">
+                <label htmlFor="packageDeliverables" className="form-label">Package Deliverables</label>
+                <Select
+                  id="packageDeliverables"
+                  name="packageDeliverables"
+                  isMulti
+                  onChange={() => { }}
+                  onBlur={handleBlur}
+                  value={
+                    selectedPackageDetails?.package?.deliverables?.map(d => ({
+                      label: d.name,
+                      value: d.id
+                    })) || []
+                  }
+                  placeholder="No deliverables"
+                />
+              </div>
+            </div>
+            {/* Other Package */}
+            <div className="mb-4 mt-20">
+              <label htmlFor="otherPackages" className="form-label">Other Package <span>*</span></label>
+              <Select
+                id="otherPackages"
+                name="package_id"
+                options={packageOptions}
+                value={packageOptions.find(option => option.value === values.package_id)}
+                onChange={(selectedOption) =>
+                  setFieldValue("package_id", selectedOption?.value)
+                }
+                onBlur={handleBlur}
+                isSearchable
+                placeholder="Select a package"
+              />
+              <ErrorMessage name="package_id" component="div" className="text-danger" />
+            </div>
+
+            <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
+              {isSubmitting ? 'Saving...' : 'Save Changes'}
+            </button>
+          </Form>
+        );
+      }}
+    </Formik>
   );
 };
 

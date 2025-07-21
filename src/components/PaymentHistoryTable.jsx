@@ -7,37 +7,53 @@ import DP3 from '../otherImages/dp-3.png';
 import DP4 from '../otherImages/dp-4.png';
 import DP5 from '../otherImages/dp-5.png';
 import DP6 from '../otherImages/dp-6.png';
+import { useSelector } from 'react-redux';
+import { useEffect, useMemo } from 'react';
+import { useDispatch } from 'react-redux';
+import { fetchPaymentHistory } from '../store/slices/paymentHistorySlice';
+import { date } from 'yup';
 
 const PaymentHistoryTable = () => {
-  const packageData = [
-    { id: 'PKG-001', packageName: 'Website Development - Basic', packageImage: DP1, price: "750/Monthly", created_at: '26 May 2025', description: 'Lorem details about what the package includes', paymentStatus: "In Progress", },
-    { id: 'PKG-002', packageName: 'Website Development - Basic', packageImage: DP2, price: "1500/Monthy", clientName: 'Pristia Candra', clientImage: DP1, created_at: '26 May 2025',created_by: 'Peter Webb', description: 'Lorem details about what the package includes', paymentStatus: "Planning", },
-    { id: 'PKG-003', packageName: 'Website Development - Basic', packageImage: DP3, price: "1500/Monthy",  clientName: 'Pristia Candra', clientImage: DP1, created_at: '26 May 2025',created_by: 'Peter Webb', description: 'Lorem details about what the package includes', paymentStatus: "Completed", },
-    { id: 'PKG-004', packageName: 'Social Media Package', packageImage: DP4, price: 500.00, clientName: 'Pristia Candra', clientImage: DP1, created_at: '26 May 2025',created_by: 'Peter Webb', description: 'Lorem details about what the package includes', paymentStatus: "Planning", },
-    { id: 'PKG-005', packageName: 'Mobile App Development', packageImage: DP5, price: 1200.00, clientName: 'Pristia Candra', clientImage: DP1, created_at: '26 May 2025',created_by: 'Peter Webb', description: 'Lorem details about what the package includes', paymentStatus: "In Progress", },
-    { id: 'PKG-006', packageName: 'Mobile App Development', packageImage: DP6, price: 5000.00, clientName: 'Pristia Candra', clientImage: DP1, created_at: '26 May 2025',created_by: 'Peter Webb', description: 'Lorem details about what the package includes', paymentStatus: "Completed", },
-    { id: 'PKG-007', packageName: 'Website Development - Basic', packageImage: DP1, price: "1500/Monthy", clientName: 'Pristia Candra', clientImage: DP1, created_at: '26 May 2025',created_by: 'Peter Webb', description: 'Lorem details about what the package includes', paymentStatus: "Planning", },
-    { id: 'PKG-008', packageName: 'Website Development - Basic', packageImage: DP2, price: "1500/Monthy", clientName: 'Pristia Candra', clientImage: DP1, created_at: '26 May 2025',created_by: 'Peter Webb', description: 'Lorem details about what the package includes', paymentStatus: "In Progress", },
-    { id: 'PKG-009', packageName: 'Website Development - Basic', packageImage: DP3, price: "1500/Monthy", clientName: 'Pristia Candra', clientImage: DP1, created_at: '26 May 2025',created_by: 'Peter Webb', description: 'Lorem details about what the package includes', paymentStatus: "Planning", },
-    { id: 'PKG-010', packageName: 'Social Media Package', packageImage: DP4, price: 500.00, clientName: 'Pristia Candra', clientImage: DP1, created_at: '26 May 2025',created_by: 'Peter Webb', description: 'Lorem details about what the package includes', paymentStatus: "Completed", },
-    { id: 'PKG-011', packageName: 'Mobile App Development', packageImage: DP5, price: 500.00, clientName: 'Pristia Candra', clientImage: DP1, created_at: '26 May 2025',created_by: 'Peter Webb', description: 'Lorem details about what the package includes', paymentStatus: "In Progress", },
-    { id: 'PKG-012', packageName: 'Mobile App Development', packageImage: DP6, price: 500.00, clientName: 'Pristia Candra', clientImage: DP1, created_at: '26 May 2025',created_by: 'Peter Webb', description: 'Lorem details about what the package includes', paymentStatus: "Completed", },
-  ];
+  const dispatch = useDispatch();
+  const { paymentHistory, loading, error } = useSelector((state) => state.paymentHistory);
+  useEffect(() => {
+    dispatch(fetchPaymentHistory()); // Now properly calling the function
+  }, [dispatch]);
+  console.log(paymentHistory);
 
+  const transformedData = useMemo(() => {
+    return paymentHistory.map(history => ({
+      ...history,
+      date: history.created_at ? new Date(history.created_at).toLocaleDateString() : 'N/A',
+      status: getStatusText(history.status)
+    }));
+  });
+
+  function getStatusText(statusCode) {
+    const statusMap = {
+      '0': 'Pending',
+      '1': 'In Progress',
+      '2': 'Completed'
+    };
+    return statusMap[statusCode] || 'Unknown';
+  }
+
+  const statusColorMap = {
+    'Pending': 'bg-warning',
+    'In Progress': 'bg-info',
+    'Completed': 'bg-success',
+    'Unknown': 'bg-secondary'
+  };
   const columns = [
     {
-      name: 'packageName',
-      label: 'Package Name',
+      name: 'title',
+      label: 'Title',
       options: {
         customBodyRender: (value, tableMeta) => {
+          console.log(value);
           const safeVal = value.toLowerCase().replace(/\s+/g, '_');
           return (
-            <div className={`col-packageName val-${safeVal} d-flex align-items-center gap-8`}>
-              <img
-                style={{ height: "35px", width: "35px", borderRadius: "50%" }}
-                src={packageData[tableMeta.rowIndex].packageImage || DefaultAvatar}
-                alt="package"
-              />
+            <div className={`col-title val-${safeVal} d-flex align-items-center gap-8`}>
               {value}
             </div>
           );
@@ -64,19 +80,19 @@ const PaymentHistoryTable = () => {
       name: 'price',
       label: 'Price',
       options: {
-      customBodyRender: (value) => {
+        customBodyRender: (value) => {
           const safeVal = value;
           return (
-          <span className={`col-price packagePrice val-${safeVal} font-bold fs-6`}>
+            <span className={`col-price packagePrice val-${safeVal} font-bold fs-6`}>
               ${value}
-          </span>
+            </span>
           );
-      }
+        }
       }
     },
 
     {
-      name: 'created_at',
+      name: 'date',
       label: 'Created At',
       options: {
         customBodyRender: (value) => {
@@ -91,13 +107,14 @@ const PaymentHistoryTable = () => {
     },
 
     {
-      name: 'paymentStatus',
+      name: 'status',
       label: 'Payment Status',
       options: {
         customBodyRender: (value) => {
           const safeVal = value.toLowerCase().replace(/\s+/g, '-');
+          const colorClass = statusColorMap[value];
           return (
-            <span className={`col-price val-${safeVal} text-gray-600`}>
+            <span className={`col-price val-${safeVal} ${colorClass} text-gray-600`}>
               {value}
             </span>
           );
@@ -122,7 +139,7 @@ const PaymentHistoryTable = () => {
     <div className="card basic-data-table">
       <div className="card-body">
         <MUIDataTable
-          data={packageData}
+          data={transformedData}
           columns={columns}
           options={options}
           className="overflow-hidden packageTable"

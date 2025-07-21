@@ -2,23 +2,35 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import banner from "../otherImages/sigupbanner.png"
+import { useDispatch, useSelector } from 'react-redux';
+import { loginUser } from '../../src/store/slices/authSlice';
 import { Formik, Form, Field } from "formik";
+import * as Yup from 'yup';
 
 const SignInLayer = () => {
+  const dispatch = useDispatch();
+  const { loading, error } = useSelector((state) => state.auth);
   const navigate = useNavigate();
 
-  const handleLogin = (values) => {
-    const { email, password } = values;
+  const loginSchema = Yup.object().shape({
+    email: Yup.string().email('Invalid email').required('Required'),
+    password: Yup.string().required('Required'),
+  });
 
-    // Dummy logic: check role based on email (replace with real API in future)
-    if (email === "admin@gmail.com" && password === "admin123") {
-      localStorage.setItem("role", "admin");
-      navigate("/dashboard");
-    } else if (email === "client@gmail.com" && password === "client123") {
-      localStorage.setItem("role", "client");
-      navigate("/all-packages");
-    } else {
-      alert("Invalid email or password");
+  const handleSubmit = async (values) => {
+    const resultAction = await dispatch(loginUser(values));
+    if (loginUser.fulfilled.match(resultAction)) {
+      const userRole = resultAction.payload.user.role;
+      navigate('/dashboard');
+      switch(userRole.toLowerCase()) {
+      case 'admin':
+      case 'super admin':
+        navigate('/dashboard');
+        break;
+      case 'client':
+        navigate('/all-packages');
+        break;
+    }
     }
   };
 
@@ -44,9 +56,12 @@ const SignInLayer = () => {
           {/* Formik Form Starts */}
           <Formik
             initialValues={{ email: "", password: "" }}
-            onSubmit={handleLogin}
+            validationSchema={loginSchema}
+            onSubmit={handleSubmit}
           >
-            <Form>
+            {({ errors, touched }) => (
+              <Form>
+              {error && <div className='text-danger mb-3'>{error}</div>}
               <div className='icon-field mb-16'>
                 <span className='icon top-50 translate-middle-y'>
                   <Icon icon='mage:email' />
@@ -58,6 +73,9 @@ const SignInLayer = () => {
                   placeholder='Email'
                   required
                 />
+                {errors.email && touched.email && (
+                  <div className='text-danger mt-2'>{errors.email}</div>
+                )}
               </div>
 
               <div className='position-relative mb-20'>
@@ -72,6 +90,9 @@ const SignInLayer = () => {
                     placeholder='Password'
                     required
                   />
+                  {errors.password && touched.password && (
+                    <div className='text-danger mt-2'>{errors.password}</div>
+                  )}
                 </div>
               </div>
 
@@ -91,10 +112,13 @@ const SignInLayer = () => {
                 </Link>
               </div>
 
-              <button type='submit' className='btn bg-primary py-16 w-100 radius-12 mt-32'>
-                Sign In
-              </button>
+              
 
+              <button type='submit' 
+              className='btn bg-primary py-16 w-100 radius-12 mt-32'
+              disabled={loading}>
+              {loading ? 'Signing In...' : 'Sign In'}
+              </button>
               <div className='mt-32 center-border-horizontal text-center'>
                 <span className='bg-base z-1 px-4 fw-bold'>Or Continue With</span>
               </div>
@@ -118,6 +142,7 @@ const SignInLayer = () => {
                 </p>
               </div>
             </Form>
+            )}
           </Formik>
         </div>
       </div>
