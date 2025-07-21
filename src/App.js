@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import axios from 'axios';
 import HomePageOne from "./adminPages/HomePageOne";
 import ErrorPage from "./adminPages/ErrorPage";
 import SignInPage from "./adminPages/SignInPage";
@@ -20,6 +21,7 @@ import MyPackagesPage from "./clientPages/MyPackagesPage";
 import PaymentHistoryPage from "./clientPages/PaymentHistoryPage";
 import EditProfilePage from "./clientPages/EditProfilePage";
 import EditInvoicePage from "./adminPages/EditInvoicePage";
+import InvoiceDetailPage from "./adminPages/InvoiceDetailPage";
 
 function App() {
 
@@ -46,6 +48,7 @@ function App() {
         <Route path='/manage-invoice' element={<ProtectedRoute element={ManageInvoices} allowedRole="admin" />} />
         <Route path='/create-invoice' element={<ProtectedRoute element={CreateInvoicePage} allowedRole="admin" />} />
         <Route path='/login-history' element={<ProtectedRoute element={LoginHistoryPage} allowedRole="admin" />} />
+        <Route path='/invoice-detail' element={<ProtectedRoute element={InvoiceDetailPage} allowedRole="client" />} />
 
         {/* Client Protected Routes */}
         <Route path='/all-packages' element={<ProtectedRoute element={ClientPackagesPage} allowedRole="client" />} />

@@ -8,6 +8,7 @@ import Swal from 'sweetalert2';
 
 const PackageSidebar = ({ show, onClose, data }) => {
   const dispatch = useDispatch();
+  console.log("data" , data);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -65,6 +66,25 @@ const PackageSidebar = ({ show, onClose, data }) => {
           <Form.Group className="mb-3">
             <Form.Label>Category</Form.Label>
             <Form.Control type="text" value={data.category} readOnly />
+          </Form.Group>
+          
+          <Form.Group className="mb-3">
+            <Form.Label>Deliverables</Form.Label>
+            <Form.Control
+              type="text"
+              value={data.deliverables.map(item => item.name).join(', ')}
+              readOnly
+            />
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>Additional Notes</Form.Label>
+            <Form.Control type="text" value={data.additional_notes} readOnly />
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>Document</Form.Label>
+            <Form.Control type="text" value={data.document} readOnly />
           </Form.Group>
 
           <div className="text-end  d-flex justify-content-end gap-10 absolute">

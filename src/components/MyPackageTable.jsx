@@ -16,11 +16,15 @@ const MyPackageTable = () => {
   console.log(assignedPackages);
   useEffect(() => {
     const fetchAndSanitize = async () => {
-        dispatch(fetchAssignedPackages)
+      dispatch(fetchAssignedPackages)
     };
 
     fetchAndSanitize();
   }, [dispatch, id]);
+
+  const handlePayNow = () => {
+        
+  };
 
   // Transform API data to match table structure
   const transformedData = assignedPackages.map(item => ({
@@ -136,7 +140,24 @@ const MyPackageTable = () => {
           }
         }
       }
-    }
+    },
+    {
+      name: 'actions',
+      label: 'Action',
+      options: {
+        filter: false,
+        sort: false,
+        customBodyRenderLite: () => {
+          // const rowData = filteredData[];
+          return (
+            <button
+              onClick={() => handlePayNow()}
+              className="viewBtn hover: cursor-pointer"
+            >Pay Now</button>
+          );
+        },
+      }
+    },
   ];
 
   const options = {
