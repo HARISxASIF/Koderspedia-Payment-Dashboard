@@ -14,7 +14,7 @@ const validationSchema = Yup.object().shape({
   category_id: Yup.number().required('Category is required'),
   price: Yup.number().required('Price is required'),
   deliverables: Yup.array().min(1, 'At least one deliverable is required'),
-  document: Yup.mixed().required('Document is required'),
+  document: Yup.mixed().nullable(),
 });
 
 const AddPackageForm = () => {
@@ -67,7 +67,7 @@ const AddPackageForm = () => {
       Swal.fire({
         icon: 'error',
         title: 'Oops...',
-        text: 'Something went wrong while adding the package!',
+        text: error.response.data.message || 'Something went wrong while adding the package!',
       });
       console.error(error);
     } finally {
@@ -153,7 +153,7 @@ const AddPackageForm = () => {
                   type="file"
                   name="document"
                   className="form-control"
-                  accept=".pdf,.doc,.docx,.jpg,.png"
+                  accept=".pdf,.doc,.docx,.txt"
                   onChange={(e) => setFieldValue('document', e.currentTarget.files[0])}
                 />
                 <ErrorMessage name="document" component="div" className="text-danger" />
@@ -161,7 +161,7 @@ const AddPackageForm = () => {
             </div>
 
             <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
-              {isSubmitting ? 'Submitting...' : 'Create Package'}
+              {isSubmitting ? 'Saving...' : 'Save Changes'}
             </button>
           </Form>
         )}

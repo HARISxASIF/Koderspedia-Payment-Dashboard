@@ -1,17 +1,19 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
-import React from "react";
+import React, { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import banner from "../otherImages/sigupbanner.png";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { useDispatch, useSelector } from "react-redux";
-import { registerUser } from '../../src/store/slices/authSlice';
+import { clearErrors, registerUser } from '../../src/store/slices/authSlice';
 import * as Yup from 'yup';
 
 const SignUpLayer = () => {
   const dispatch = useDispatch();
   const { loading, error } = useSelector((state) => state.auth);
   const navigate = useNavigate();
-
+useEffect(() => {
+    dispatch(clearErrors());
+  }, [dispatch]);
   const registerSchema = Yup.object().shape({
     name: Yup.string()
       .min(3, 'Too short!')

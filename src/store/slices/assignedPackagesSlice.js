@@ -7,6 +7,7 @@ export const fetchAssignedPackages = createAsyncThunk(
     async (clientId, { rejectWithValue }) => {
         try {
             const response = await PackagesService.getAssignedPackages(clientId);
+            console.log(response);
             return response.data.data.assigned_packages;
         } catch (error) {
             return rejectWithValue(error.response?.data?.message || error.message);

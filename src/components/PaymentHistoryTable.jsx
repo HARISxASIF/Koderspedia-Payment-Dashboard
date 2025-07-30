@@ -32,8 +32,8 @@ const PaymentHistoryTable = () => {
   function getStatusText(statusCode) {
     const statusMap = {
       '0': 'Pending',
-      '1': 'In Progress',
-      '2': 'Completed'
+      '1': 'Completed',
+      '2': 'In Progress',
     };
     return statusMap[statusCode] || 'Unknown';
   }
@@ -114,7 +114,7 @@ const PaymentHistoryTable = () => {
           const safeVal = value.toLowerCase().replace(/\s+/g, '-');
           const colorClass = statusColorMap[value];
           return (
-            <span className={`col-price val-${safeVal} ${colorClass} text-gray-600`}>
+            <span className={`col-price val-${safeVal} ${colorClass} text-light-600`}>
               {value}
             </span>
           );

@@ -147,7 +147,7 @@ const EditPackageForm = () => {
                   type="file"
                   name="document"
                   className="form-control"
-                  accept=".pdf,.doc,.docx,.jpg,.png"
+                  accept=".pdf,.doc,.docx,.txt"
                   onChange={(e) => setFieldValue('document', e.currentTarget.files[0])}
                 />
                 <ErrorMessage name="document" component="div" className="text-danger" />
@@ -155,7 +155,7 @@ const EditPackageForm = () => {
             </div>
 
             <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
-              {isSubmitting ? 'Updating...' : 'Save Changes'}
+              {isSubmitting ? 'Updating...' : 'Updating Package'}
             </button>
           </Form>
         )}

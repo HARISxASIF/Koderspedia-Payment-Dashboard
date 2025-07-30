@@ -2,7 +2,7 @@ import { Icon } from '@iconify/react/dist/iconify.js'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-const ForgotPasswordLayer = () => {
+const SendPasswordResetToken = () => {
     return (
         <>
             <section className="auth forgot-password-page bg-base d-flex flex-wrap">
@@ -96,4 +96,4 @@ const ForgotPasswordLayer = () => {
     )
 }
 
-export default ForgotPasswordLayer
+export default SendPasswordResetToken

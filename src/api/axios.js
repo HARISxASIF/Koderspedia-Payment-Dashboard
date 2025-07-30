@@ -2,8 +2,7 @@ import axios from 'axios';
 import { store } from '../store/store';
 
 const axiosInstance = axios.create({
-  baseURL: process.env.REACT_APP_API_BASE_URL || 'http://127.0.0.1:8000/api',
-  timeout: 10000,
+  baseURL: process.env.REACT_APP_API_BASE_PRODUCTION_URL,
 });
 
 // Request interceptor

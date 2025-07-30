@@ -17,8 +17,11 @@ const InvoiceService = {
 
   getPaymentTypes: () => axiosInstance.get('invoices/get-payment-types'),
 
-  getPaymentHistory: () => axiosInstance.get(`/invoices/get-payment-history`)
+  getPaymentHistory: () => axiosInstance.get(`/invoices/get-payment-history`),
 
+  getInvoiceByAssignment: (assignmentId) => axiosInstance.get(`/invoices/get-invoice-by-assignment/${assignmentId}`),
+
+  getInvoice: (id) => axiosInstance.get(`/get-invoice/${id}`)
 };
 
 export default InvoiceService;

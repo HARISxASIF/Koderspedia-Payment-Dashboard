@@ -28,6 +28,9 @@ const ClientDataTable = () => {
     return clients.map(client => ({
       ...client,
       date: client.created_at ? new Date(client.created_at).toLocaleDateString() : 'N/A',
+      packageNames: Array.isArray(client.packages)
+        ? client.packages.map(pkg => pkg.name).join(', ')
+        : ''
     }))
   }, [clients])
 
@@ -107,29 +110,24 @@ const ClientDataTable = () => {
           const safeVal = rowData.phone?.toLowerCase().replace(/\s+/g, '-');
           return (
             <span className={`col-phone val-${safeVal} font-bold`}>
-              {rowData.phone}
+              {rowData.phone ?? 'N/A'}
             </span>
           );
         }
       }
     },
     {
-      name: 'packages',
+      name: 'packageNames', // Changed from 'packages' to use our flattened field
       label: 'Assigned Packages',
       options: {
+        searchable: true, // Enable searching
+        filter: true,
+        sort: true,
         customBodyRenderLite: (dataIndex) => {
           const rowData = filteredData[dataIndex];
-
-          // Safely get packages array (default to empty array)
           const packagesArray = Array.isArray(rowData.packages) ? rowData.packages : [];
-
-          // Extract package names
           const packageNames = packagesArray.map(pkg => pkg.name || 'Unnamed Package');
-
-          // Join names for display
           const displayText = packageNames.length ? packageNames.join(', ') : 'None';
-
-          // Create safe CSS class
           const safeVal = displayText.toLowerCase().replace(/\s+/g, '-');
 
           return (
@@ -184,6 +182,16 @@ const ClientDataTable = () => {
     filter: false,
     search: true,
     // searchOpen: true,
+    customSearch: (searchQuery, currentRow) => {
+      const searchValue = searchQuery.toLowerCase();
+      return (
+        currentRow.name?.toLowerCase().includes(searchValue) ||
+        currentRow.email?.toLowerCase().includes(searchValue) ||
+        currentRow.phone?.toLowerCase().includes(searchValue) ||
+        currentRow.date?.toLowerCase().includes(searchValue) ||
+        currentRow.packageNames?.toLowerCase().includes(searchValue) // Search in package names
+      );
+    }
   };
 
   return (

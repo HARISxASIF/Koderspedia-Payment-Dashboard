@@ -8,12 +8,17 @@ import DefaultAvatar from '../otherImages/default.png';
 import { useSelector, useDispatch } from 'react-redux';
 import { deleteInvoice, fetchInvoices } from '../store/slices/invoiceSlice';
 import DeleteConfirmButton from './DeleteConfirmButton';
+import Swal from 'sweetalert2';
+import InvoiceService from '../services/invoiceService';
+import InvoiceDownloader from '../common/InvoiceDownloader';
 
 const InvoiceDataTable = () => {
   const dispatch = useDispatch();
   const [filter, setFilter] = useState('monthly');
   const navigate = useNavigate();
+  const [downloading, setDownloading] = useState(null);
   const { invoices, loading, error } = useSelector((state) => state.invoices);
+  
   useEffect(() => {
     dispatch(fetchInvoices());
   }, [dispatch])
@@ -21,11 +26,17 @@ const InvoiceDataTable = () => {
   const handleEditPackage = (rowData) => {
     navigate(`/edit-invoice/${rowData.id}`, { state: { invoice: rowData } });
   };
+
+  // Flatten the data for better searching
   const transformedInvoices = useMemo(() => {
     if (!invoices) return [];
     return invoices.map(invoice => ({
       ...invoice,
       date: invoice.created_at ? new Date(invoice.created_at).toLocaleDateString() : 'N/A',
+      clientName: invoice.client?.name || 'No Name',
+      clientImage: invoice.client?.image_url || DefaultAvatar,
+      createdByName: invoice.created_by?.name || "N/A",
+      statusText: invoice.status == 1 ? 'paid' : 'pending'
     }))
   }, [invoices])
 
@@ -46,40 +57,38 @@ const InvoiceDataTable = () => {
       name: 'title',
       label: 'Title',
       options: {
+        filter: true,
+        sort: true,
+        searchable: true,
         customBodyRenderLite: (dataIndex) => {
           const rowData = filteredData[dataIndex];
-          // Safely access nested properties
-          const title = rowData.title;
-          const safeVal = title.toLowerCase().replace(/\s+/g, '_');
-
+          const safeVal = rowData.title.toLowerCase().replace(/\s+/g, '_');
           return (
             <div className={`col-name val-${safeVal} d-flex align-items-center gap-8`}>
-             
-              {title}
+              {rowData.title}
             </div>
           );
         }
       }
     },
     {
-      name: 'name',
+      name: 'clientName',
       label: 'Client',
       options: {
+        filter: true,
+        sort: true,
+        searchable: true,
         customBodyRenderLite: (dataIndex) => {
           const rowData = filteredData[dataIndex];
-          // Safely access nested properties
-          const clientName = rowData.client?.name || 'No Name';
-          const clientImage = rowData.client?.image_url || DefaultAvatar;
-          const safeVal = (clientName || '').toLowerCase().replace(/\s+/g, '_');
-
+          const safeVal = rowData.clientName.toLowerCase().replace(/\s+/g, '_');
           return (
             <div className={`col-name val-${safeVal} d-flex align-items-center gap-8`}>
               <img
                 style={{ height: "35px", width: "35px", borderRadius: "50%" }}
-                src={clientImage}
+                src={rowData.clientImage}
                 alt="client"
               />
-              {clientName}
+              {rowData.clientName}
             </div>
           );
         }
@@ -89,9 +98,12 @@ const InvoiceDataTable = () => {
       name: 'price',
       label: 'Price',
       options: {
+        filter: true,
+        sort: true,
+        searchable: true,
         customBodyRenderLite: (dataIndex) => {
           const rowData = filteredData[dataIndex];
-          const price = parseFloat(rowData.price) || 0; // Convert string to number
+          const price = parseFloat(rowData.price) || 0;
           const safeVal = price.toFixed(2).replace('.', '-');
           return (
             <span className={`col-price val-${safeVal} font-bold`}>
@@ -105,11 +117,13 @@ const InvoiceDataTable = () => {
       name: 'remaining_price',
       label: 'Remaining($)',
       options: {
+        filter: true,
+        sort: true,
+        searchable: true,
         customBodyRenderLite: (dataIndex) => {
           const rowData = filteredData[dataIndex];
           const remainingPrice = parseFloat(rowData.remaining_price) || 0;
           const safeVal = remainingPrice.toFixed(2).replace('.', '-');
-
           return (
             <span className={`col-price val-${safeVal} font-bold`}>
               ${remainingPrice.toFixed(2)}
@@ -118,38 +132,34 @@ const InvoiceDataTable = () => {
         }
       }
     },
-    // {
-    //   name: 'assignedPackages',
-    //   label: 'Assigned Packages',
-    //   options: {
-    //     customBodyRenderLite: (dataIndex) => {
-    //       const rowData = filteredData[dataIndex];
-    //       const packages = rowData.client?.packages || [];
-
-    //       return (
-    //         <div className="flex flex-wrap gap-2">
-    //           {packages.map((pkg) => (
-    //             <span
-    //               key={pkg.id}
-    //               className="px-2 py-1 bg-gray-100 rounded-full text-sm font-medium"
-    //             >
-    //               {pkg.name} (${parseFloat(pkg.price).toFixed(2)})
-    //             </span>
-    //           ))}
-    //         </div>
-    //       );
-    //     }
-    //   }
-    // },
-
     {
-      name: 'created_at',
+      name: 'statusText',
+      label: 'Status',
+      options: {
+        filter: true,
+        sort: true,
+        searchable: true,
+        customBodyRenderLite: (dataIndex) => {
+          const rowData = filteredData[dataIndex];
+          let badgeClass = rowData.status == 1 ? 'badge bg-success text-white' : 'badge bg-warning';
+          return (
+            <span className={badgeClass}>
+              {rowData.statusText}
+            </span>
+          );
+        }
+      }
+    },
+    {
+      name: 'date',
       label: 'Created At',
       options: {
+        filter: true,
+        sort: true,
+        searchable: true,
         customBodyRenderLite: (dataIndex) => {
           const rowData = filteredData[dataIndex];
           const safeVal = rowData.date.toLowerCase().replace(/\s+/g, '-');
-
           return (
             <span className={`col-date val-${safeVal} text-gray-600`}>
               {rowData.date}
@@ -159,17 +169,18 @@ const InvoiceDataTable = () => {
       }
     },
     {
-      name: 'created_by',
+      name: 'createdByName',
       label: 'Created By',
       options: {
+        filter: true,
+        sort: true,
+        searchable: true,
         customBodyRenderLite: (dataIndex) => {
           const rowData = filteredData[dataIndex];
-          const userId = rowData.created_by?.name || "N/A"; // Fallback if null
-          const safeVal = String(userId).toLowerCase().replace(/\s+/g, '-');
-
+          const safeVal = String(rowData.createdByName).toLowerCase().replace(/\s+/g, '-');
           return (
             <span className={`col-date val-${safeVal} text-gray-600`}>
-              {userId}
+              {rowData.createdByName}
             </span>
           );
         }
@@ -181,41 +192,36 @@ const InvoiceDataTable = () => {
       options: {
         filter: false,
         sort: false,
+        searchable: false,
         customBodyRenderLite: (dataIndex) => {
           const rowData = filteredData[dataIndex];
-
-          // Function: Download Invoice PDF
-          const handleDownloadInvoice = () => {
-            const link = document.createElement('a');
-            link.href = rowData.download_invoice; // e.g. '/assets/invoices/invoice.pdf'
-            link.download = 'invoice.pdf'; // optional custom file name
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-          };
-
-          // Function: Copy Invoice Link
+          const isDownloading = downloading === rowData.id;
+          
           const handleInvoiceLink = () => {
-            if (rowData.invoice_link) {
-              navigator.clipboard.writeText(rowData.invoice_link)
-                .then(() => {
-                  alert("Invoice link copied to clipboard!");
-                })
-                .catch(err => {
-                  console.error("Clipboard copy failed:", err);
+            const fullLink = `${window.location.origin}/invoice-detail/${rowData.id}`;
+            navigator.clipboard.writeText(fullLink)
+              .then(() => {
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Copied!',
+                  text: 'Invoice link copied to clipboard.',
+                  timer: 2000,
+                  showConfirmButton: false,
                 });
-            }
+              })
+              .catch(err => {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Oops...',
+                  text: 'Failed to copy invoice link.',
+                });
+                console.error("Clipboard copy failed:", err);
+              });
           };
 
           return (
             <div className="flex gap-2 invoice-link">
-              <Icon
-                onClick={handleDownloadInvoice}
-                className="d-invoice hover:cursor-pointer"
-                icon="material-symbols:sim-card-download"
-                width="24"
-                height="24"
-              />
+              <InvoiceDownloader invoiceId={rowData.id} />
               <Icon
                 onClick={handleInvoiceLink}
                 className="copy-invoice hover:cursor-pointer"
@@ -234,6 +240,7 @@ const InvoiceDataTable = () => {
       options: {
         filter: false,
         sort: false,
+        searchable: false,
         customBodyRenderLite: (dataIndex) => {
           const rowData = filteredData[dataIndex];
           return (
@@ -260,7 +267,6 @@ const InvoiceDataTable = () => {
     },
   ];
 
-
   const options = {
     selectableRows: 'none',
     rowsPerPage: 10,
@@ -271,28 +277,30 @@ const InvoiceDataTable = () => {
     viewColumns: false,
     filter: false,
     search: true,
-    // searchOpen: true,
+    searchPlaceholder: 'Search by any field...',
+    customSearch: (searchQuery, currentRow, columns) => {
+      const searchValue = searchQuery.toLowerCase();
+      return Object.values(currentRow).some(value => 
+        String(value).toLowerCase().includes(searchValue)
+      );
+    }
   };
 
   return (
     <div className="card basic-data-table">
       <div className="card-header d-flex justify-content-between align-items-center">
-        <div class="tableHeading">
+        <div className="tableHeading">
           <h3 className='fs-3 fw-semibold'>
-            {filter === "all"
-              ? "All Invoices"
-              : "Monthly Invoices"}
+            {filter === "all" ? "All Invoices" : "Monthly Invoices"}
           </h3>
         </div>
         <div className="custom-toggle">
           <div className="toggle-container">
             <div
-              className={`toggle-indicator ${filter === "all" ? "right" : "left"
-                }`}
+              className={`toggle-indicator ${filter === "all" ? "right" : "left"}`}
             />
             <div
-              className={`toggle-option ${filter === "monthly" ? "active" : ""
-                }`}
+              className={`toggle-option ${filter === "monthly" ? "active" : ""}`}
               onClick={() => setFilter("monthly")}
             >
               <Icon icon="mdi:account" width="22" />

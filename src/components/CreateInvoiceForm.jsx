@@ -125,7 +125,7 @@ const CreateInvoiceForm = () => {
       validationSchema={validationSchema}
       onSubmit={handleSubmit}
     >
-      {({ values, setFieldValue }) => (
+      {({ values, setFieldValue,isSubmitting }) => (
         <Form className="container mt-4 mainForm" encType="multipart/form-data">
           <div className="mb-3">
             <label htmlFor="title" className="form-label">
@@ -229,7 +229,7 @@ const CreateInvoiceForm = () => {
               Sale Type <span>*</span>
             </label>
             <div>
-              {["Fresh Sale", "Upsell", "Follow Up"].map(type => (
+              {["Fresh Sale", "Upsell", "Recurring"].map(type => (
                 <div className="form-check" key={type}>
                   <Field
                     className="form-check-input"
@@ -247,7 +247,7 @@ const CreateInvoiceForm = () => {
             <ErrorMessage name="sale_type" component="div" className="text-danger" />
           </div>
           <button type="submit" className="btn btn-primary">
-            Add
+            {isSubmitting ? 'Saving...' : 'Save Changes'}
           </button>
         </Form>
       )}

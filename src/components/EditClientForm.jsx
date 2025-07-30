@@ -11,8 +11,22 @@ import ClientService from '../services/clientService';
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().required('Client name is required'),
-  email: Yup.string().email('Invalid email').required('Email is required'),
-  phone: Yup.string().required('Phone number is required'),
+  email: Yup.string()
+    .test(
+      'is-valid-email',
+      'Email must contain "@" and a domain like ".com"',
+      function (value) {
+        // Basic custom check
+        return (
+          typeof value === 'string' &&
+          value.includes('@') &&
+          /\.[a-z]{2,}$/.test(value.split('@')[1] || '')
+        );
+      }
+    ),
+  phone: Yup.string()
+    .matches(/^[0-9]{10,11}$/, 'Phone number must be 10 or 11 digits')
+    .required('Phone number is required'),
 });
 
 const EditClientForm = () => {
@@ -72,13 +86,12 @@ const EditClientForm = () => {
     label: pkg.name,
   }));
 
-
-
   const initialValues = {
     name: clientData?.name || '',
     email: clientData?.email || '',
     phone: clientData?.phone || '',
     image_url: clientData?.image_url || '',
+    address: clientData?.address || '',
     image: null,
     assignedPackages: null,
     package_id: null,
@@ -99,7 +112,7 @@ const EditClientForm = () => {
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: error.data.message || 'Failed to update client',
+        text: error || 'Failed to update client',
       });
       console.error(error);
     } finally {
@@ -183,11 +196,15 @@ const EditClientForm = () => {
               </div>
               <div className="col-md-6 mb-3">
                 <label htmlFor="phone" className="form-label">Phone Number <span>*</span></label>
-                <Field type="text" className="form-control" id="phone" name="phone" />
+                <Field type="number" className="form-control" id="phone" name="phone" />
                 <ErrorMessage name="phone" component="div" className="text-danger" />
               </div>
             </div>
-
+            <div className="mb-3">
+              <label htmlFor="address" className="form-label">Address</label>
+              <Field as="textarea" name="address" className="form-control" placeholder="e.g., 123 Main St" style={{ backgroundColor: '#ebecef' }} />
+              <ErrorMessage name="address" component="div" className="text-danger" />
+            </div>
             {/* Assigned Packages */}
             <div className="mb-4">
               <label htmlFor="assignedPackages" className="form-label">Assigned Package <span>*</span></label>
@@ -251,7 +268,7 @@ const EditClientForm = () => {
             </div>
             {/* Other Package */}
             <div className="mb-4 mt-20">
-              <label htmlFor="otherPackages" className="form-label">Other Package <span>*</span></label>
+              <label htmlFor="otherPackages" className="form-label">Other Package</label>
               <Select
                 id="otherPackages"
                 name="package_id"
@@ -268,7 +285,7 @@ const EditClientForm = () => {
             </div>
 
             <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
-              {isSubmitting ? 'Saving...' : 'Save Changes'}
+              {isSubmitting ? 'Updating...' : 'Update Client'}
             </button>
           </Form>
         );

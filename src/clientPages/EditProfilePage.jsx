@@ -99,7 +99,7 @@ const EditProfilePage = () => {
   return (
     <MasterLayout>
       <HomeTopBar
-        title="Welcome Back, John Doe!"
+        title={`Welcome Back, ${user.name?.replace(/\b\w/g, c => c.toUpperCase())}!`}
         desc="Your recruitment metrics and activities at a glance"
       />
       <DefaultTopBar title="Edit Employee Details" />

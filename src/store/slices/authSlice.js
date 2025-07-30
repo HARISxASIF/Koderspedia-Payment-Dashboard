@@ -34,9 +34,13 @@ export const registerUser = createAsyncThunk(
       localStorage.setItem('role', user.role); // Store role for later use
       return { token, user, role: user.role }; // ✅ only return required payload
     } catch (error) {
-      const errorMessage = error.response?.data?.message ||
-        error.response?.data?.data?.error?.[0] ||
-        error.message;
+      let errorMessage;
+      if (error.response?.data?.errors) {
+        const [field, messages] = Object.entries(error.response.data.errors)[0];
+        errorMessage = `${messages[0]}`; // "username: The username has already been taken."
+      } else {
+        errorMessage = error.response?.data?.message || error.message;
+      }
       return rejectWithValue(errorMessage);
     }
   }
@@ -77,7 +81,7 @@ export const editProfile = createAsyncThunk(
 
       return updatedUser;
     } catch (error) {
-            return rejectWithValue(
+      return rejectWithValue(
         error.response?.data?.message ||
         error.message ||
         "Profile update failed"
@@ -99,12 +103,21 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     logout: (state) => {
+      // Clear all storage
       localStorage.removeItem('token');
       localStorage.removeItem('user');
+      localStorage.removeItem('role');
+      sessionStorage.removeItem('token');
+      sessionStorage.removeItem('user');
+      sessionStorage.removeItem('role');
+
       state.user = null;
       state.token = null;
       state.role = null;
-    }
+    },
+    clearErrors: (state) => {
+      state.error = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -152,5 +165,5 @@ const authSlice = createSlice({
   }
 });
 
-export const { logout } = authSlice.actions;
+export const { logout,clearErrors } = authSlice.actions;
 export default authSlice.reducer;

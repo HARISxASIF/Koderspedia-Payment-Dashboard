@@ -7,13 +7,13 @@ export const fetchloginActivity = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             const response = await loginActivityService.loginActivity();
+            console.log("Fetched login activity:", response.data.data.login_activities);
             return response.data.data.login_activities; // Adjusted to match your API response
         } catch (error) {
             return rejectWithValue(error.response.data);
         }
     }
 )
-
 const loginActivitySlice = createSlice({
     name: 'loginActivity',
     initialState: {
@@ -29,6 +29,13 @@ const loginActivitySlice = createSlice({
         clearError: (state) => {
             state.error = null;
         },
+        resetLoginActivity: (state) => {
+            state.loginActivity = [];
+            state.error = null;
+            state.loading = false;
+            state.currentloginActivity = null;
+        }
+
     },
     extraReducers: (builder) => {
         builder
@@ -38,12 +45,12 @@ const loginActivitySlice = createSlice({
             })
             .addCase(fetchloginActivity.fulfilled, (state, action) => {
                 state.loading = false;
-                state.loginActivity = action.payload; 
+                state.loginActivity = action.payload;
             })
             .addCase(fetchloginActivity.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
-            })  
+            })
     },
 
 })

@@ -15956,3 +15956,7 @@ td.fc-header-center {
 .pay-button:hover {
   background-color: #3730a3;
 }
+#description{
+  position: relative;
+    z-index: 0;
+}

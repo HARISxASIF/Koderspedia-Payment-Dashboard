@@ -1,5 +1,4 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import axios from 'axios';
 import HomePageOne from "./adminPages/HomePageOne";
 import ErrorPage from "./adminPages/ErrorPage";
 import SignInPage from "./adminPages/SignInPage";
@@ -22,6 +21,9 @@ import PaymentHistoryPage from "./clientPages/PaymentHistoryPage";
 import EditProfilePage from "./clientPages/EditProfilePage";
 import EditInvoicePage from "./adminPages/EditInvoicePage";
 import InvoiceDetailPage from "./adminPages/InvoiceDetailPage";
+import SendPasswordResetTokenPage from "./adminPages/SendPasswordResetTokenPage";
+import VerifyPasswordResetTokenPage from "./adminPages/VerifyPasswordResetTokenPage";
+import ResetPasswordPage from "./adminPages/ResetPasswordPage";
 
 function App() {
 
@@ -36,6 +38,10 @@ function App() {
         <Route path='/signup' element={<SignUpPage />} />
         <Route path='/access-denied' element={<AccessDeniedPage />} />
 
+        <Route path='/send-password-reset-token' element={<SendPasswordResetTokenPage />} />
+        <Route path='/verify-password-reset-token' element={<VerifyPasswordResetTokenPage />} />
+        <Route path='/reset-password' element={<ResetPasswordPage />} />
+
         {/* Admin Protected Routes */}
         <Route path='/dashboard' element={<ProtectedRoute element={HomePageOne} allowedRole="admin" />} />
         <Route path='/manage-clients' element={<ProtectedRoute element={ManageClients} allowedRole="admin" />} />
@@ -48,7 +54,7 @@ function App() {
         <Route path='/manage-invoice' element={<ProtectedRoute element={ManageInvoices} allowedRole="admin" />} />
         <Route path='/create-invoice' element={<ProtectedRoute element={CreateInvoicePage} allowedRole="admin" />} />
         <Route path='/login-history' element={<ProtectedRoute element={LoginHistoryPage} allowedRole="admin" />} />
-        <Route path='/invoice-detail' element={<ProtectedRoute element={InvoiceDetailPage} allowedRole="client" />} />
+        <Route path='/invoice-detail/:id' element={<InvoiceDetailPage/>} />
 
         {/* Client Protected Routes */}
         <Route path='/all-packages' element={<ProtectedRoute element={ClientPackagesPage} allowedRole="client" />} />

@@ -19,6 +19,7 @@ const AddClientForm = () => {
     username: '',
     email: '',
     phone: '',
+    address: '',
     password: '',
     confirmPassword: '',
     image: null,
@@ -26,18 +27,32 @@ const AddClientForm = () => {
 
   const validationSchema = Yup.object({
     name: Yup.string().required('Client name is required'),
-    email: Yup.string().email('Invalid email').required('Email is required'),
-    phone: Yup.string().required('Phone number is required'),
+    email: Yup.string()
+      .test(
+        'is-valid-email',
+        'Email must contain "@" and a domain like ".com"',
+        function (value) {
+          // Basic custom check
+          return (
+            typeof value === 'string' &&
+            value.includes('@') &&
+            /\.[a-z]{2,}$/.test(value.split('@')[1] || '')
+          );
+        }
+      ),
+    phone: Yup.string()
+      .matches(/^[0-9]{10,11}$/, 'Phone number must be 10 or 11 digits')
+      .required('Phone number is required'),
+    address: Yup.string().nullable(),
     password: Yup.string().min(6, 'Minimum 6 characters').required('Password is required'),
     confirmPassword: Yup.string()
       .oneOf([Yup.ref('password'), null], 'Passwords must match')
       .required('Confirm password is required'),
-    image: Yup.mixed().required('Profile picture is required'),
+    image: Yup.mixed().nullable(),
   });
 
   const handleSubmit = async (values, { resetForm }) => {
     try {
-
       await dispatch(createClient(values)).unwrap();
       Swal.fire({
         icon: 'success',
@@ -64,7 +79,7 @@ const AddClientForm = () => {
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
-        {({ setFieldValue }) => (
+        {({ setFieldValue, isSubmitting }) => (
           <Form encType="multipart/form-data">
 
 
@@ -76,7 +91,7 @@ const AddClientForm = () => {
               </div>
 
               <div className="col-md-6 mb-3">
-                <label htmlFor="username" className="form-label">Username *</label>
+                <label htmlFor="username" className="form-label">Username</label>
                 <Field type="text" name="username" className="form-control" placeholder="e.g., johndoe123" />
                 <ErrorMessage name="username" component="div" className="text-danger" />
               </div>
@@ -90,9 +105,14 @@ const AddClientForm = () => {
 
               <div className="col-md-6 mb-3">
                 <label htmlFor="phone" className="form-label">Phone Number *</label>
-                <Field type="text" name="phone" className="form-control" placeholder="e.g., 33304442" />
+                <Field type="number" name="phone" className="form-control" placeholder="e.g., 33304442" />
                 <ErrorMessage name="phone" component="div" className="text-danger" />
               </div>
+            </div>
+            <div className="mb-3">
+              <label htmlFor="address" className="form-label">Address</label>
+              <Field as="textarea" name="address" className="form-control" placeholder="e.g., 123 Main St" style={{ backgroundColor: '#ebecef' }} />
+              <ErrorMessage name="address" component="div" className="text-danger" />
             </div>
 
             <div className="mb-3 position-relative">
@@ -126,7 +146,7 @@ const AddClientForm = () => {
             </div>
 
             <div className="mb-4">
-              <label htmlFor="image" className="form-label">Upload Picture *</label>
+              <label htmlFor="image" className="form-label">Upload Picture</label>
               <input
                 type="file"
                 className="form-control"
@@ -138,7 +158,7 @@ const AddClientForm = () => {
               <ErrorMessage name="image" component="div" className="text-danger" />
             </div>
 
-            <button type="submit" className="btn btn-primary">Add Client</button>
+            <button type="submit" disabled={isSubmitting} className="btn btn-primary">{isSubmitting ? 'Saving...' : 'Save Changes'}</button>
           </Form>
         )}
       </Formik>

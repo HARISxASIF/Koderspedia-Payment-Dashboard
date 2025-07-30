@@ -6,24 +6,36 @@ import { useParams } from 'react-router-dom';
 import DefaultAvatar from '../otherImages/default.png';
 import LoadingSpinner from '../common/LoadingSpinner';
 import { fetchAssignedPackages, sanitizePackages } from '../store/slices/assignedPackagesSlice';
+import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 const MyPackageTable = () => {
   const { user } = useSelector((state) => state.auth);
   const id = user?.id;
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { assignedPackages, loading, error } = useSelector((state) => state.assignedPackages);
   const [filterStatus, setFilterStatus] = useState('');
-  console.log(assignedPackages);
   useEffect(() => {
     const fetchAndSanitize = async () => {
-      dispatch(fetchAssignedPackages)
+      dispatch(fetchAssignedPackages(id));
     };
 
     fetchAndSanitize();
   }, [dispatch, id]);
 
-  const handlePayNow = () => {
-        
+  const handlePayNow = (invoice) => {
+    if (!invoice || invoice.id == null) {
+      Swal.fire({
+        icon: 'info',
+        title: 'Invoice Removed',
+        text: 'This assignment has no invoice available.',
+        showConfirmButton: true,
+        confirmButtonText: 'OK',
+      });
+      return;
+    }
+    navigate(`/invoice-detail/${invoice.id}`);
   };
 
   // Transform API data to match table structure
@@ -35,6 +47,7 @@ const MyPackageTable = () => {
     description: item.package.description,
     price: `$${parseFloat(item.package.price).toFixed(2)}`,
     packageDeliverable: item.package.deliverables.map(d => d.name),
+    invoice: item.invoice,
     paymentStatus: getStatusText(item.status),
     rawStatus: item.status,
     packageDetails: item.package // Keep full package details for potential use
@@ -42,18 +55,17 @@ const MyPackageTable = () => {
 
   function getStatusText(statusCode) {
     const statusMap = {
-      '0': 'Planning',
-      '1': 'In Progress',
-      '2': 'Completed'
+      '0': 'Pending',
+      '1': 'Completed',
+      '2': 'In Progress',
     };
     return statusMap[statusCode] || 'Unknown';
   }
 
   const statusColorMap = {
-    'Planning': 'bg-warning',
-    'In Progress': 'bg-info',
+    'Pending': 'bg-warning',
     'Completed': 'bg-success',
-    'Unknown': 'bg-secondary'
+    'In Progress': 'bg-info',
   };
 
   const columns = [
@@ -147,13 +159,16 @@ const MyPackageTable = () => {
       options: {
         filter: false,
         sort: false,
-        customBodyRenderLite: () => {
-          // const rowData = filteredData[];
+        customBodyRenderLite: (dataIndex) => {
+          const rowData = transformedData[dataIndex];
+          console.log(rowData);
           return (
             <button
-              onClick={() => handlePayNow()}
-              className="viewBtn hover: cursor-pointer"
-            >Pay Now</button>
+              onClick={() => handlePayNow(rowData.invoice)}
+              className={`viewBtn hover: cursor-pointer`}
+            >
+              {rowData.paymentStatus === 'Completed' ? 'View Invoice' : 'Pay Now'}
+            </button>
           );
         },
       }
@@ -206,9 +221,9 @@ const MyPackageTable = () => {
             onChange={(e) => setFilterStatus(e.target.value)}
           >
             <option value="">All Status</option>
-            <option value="0">Planning</option>
-            <option value="1">In Progress</option>
-            <option value="2">Completed</option>
+            <option value="0">Pending</option>
+            <option value="1">Completed</option>
+            <option value="2">In Progress</option>
           </select>
         </div>
       </div>

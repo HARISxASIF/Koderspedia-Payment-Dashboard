@@ -12,6 +12,7 @@ const ClientService = {
         data.append('username', formData.username);
         data.append('email', formData.email);
         data.append('phone', formData.phone);
+        data.append('address', formData.address);
         data.append('password', formData.password);
         if (formData.image) {
             data.append('image', formData.image);
@@ -21,6 +22,7 @@ const ClientService = {
     },
 
     update: (id, formData) => {
+        console.log(formData);
         const data = new FormData();
         if (formData.name !== null && formData.name !== undefined) {
             data.append('name', formData.name);
@@ -30,6 +32,9 @@ const ClientService = {
         }
         if (formData.phone !== null && formData.phone !== undefined) {
             data.append('phone', formData.phone);
+        }
+        if (formData.address !== null && formData.address !== undefined) {
+            data.append('address', formData.address);
         }
         if (formData.package_id !== null && formData.package_id !== undefined) {
             data.append('package_id', formData.package_id);

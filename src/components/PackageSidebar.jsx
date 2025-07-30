@@ -3,16 +3,17 @@ import React from 'react';
 import { Offcanvas, Form, Button, Image } from 'react-bootstrap';
 import DefaultAvatar from '../otherImages/default.png';
 import { useDispatch } from 'react-redux';
-import { assignPackage , sanitizePackages } from '../store/slices/assignedPackagesSlice';
+import { assignPackage, sanitizePackages } from '../store/slices/assignedPackagesSlice';
 import Swal from 'sweetalert2';
 
 const PackageSidebar = ({ show, onClose, data }) => {
   const dispatch = useDispatch();
-  console.log("data" , data);
+  console.log("data", data);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // dispatch(sanitizePackages());
       await dispatch(assignPackage(data.id)).unwrap();
       Swal.fire({
         icon: 'success',
@@ -50,8 +51,13 @@ const PackageSidebar = ({ show, onClose, data }) => {
 
           <Form.Group className="mb-3">
             <Form.Label>Description</Form.Label>
-            <Form.Control as="textarea" rows={3} value={data.description} readOnly />
-          </Form.Group> 
+            <div
+              className="form-control p-2"
+              style={{ minHeight: '100px', padding:'10px' }}
+              dangerouslySetInnerHTML={{ __html: data.description }}
+            />
+          </Form.Group>
+
 
           <Form.Group className="mb-3">
             <Form.Label>Price</Form.Label>
@@ -67,7 +73,7 @@ const PackageSidebar = ({ show, onClose, data }) => {
             <Form.Label>Category</Form.Label>
             <Form.Control type="text" value={data.category} readOnly />
           </Form.Group>
-          
+
           <Form.Group className="mb-3">
             <Form.Label>Deliverables</Form.Label>
             <Form.Control

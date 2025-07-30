@@ -241,7 +241,7 @@ const EditInvoiceForm = () => {
                 Sale Type <span className="text-danger">*</span>
               </label>
               <div>
-                {['Fresh Sale', 'Upsell', 'Follow Up'].map((type) => (
+                {['Fresh Sale', 'Upsell', 'Recurring'].map((type) => (
                   <div className="form-check" key={type}>
                     <Field
                       type="radio"

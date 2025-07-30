@@ -10,10 +10,11 @@ import { useSelector } from 'react-redux';
 
 const MasterLayout = ({ children }) => {
   const role = useSelector((state) => state.auth.role);
+  const {user} = useSelector((state) => state.auth);
   const [sidebarActive, setSidebarActive] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
   const location = useLocation();
-
+  console.log(user);
   useEffect(() => {
     const openActiveDropdown = () => {
       const allDropdowns = document.querySelectorAll(".sidebar-menu .dropdown");
@@ -237,7 +238,7 @@ const MasterLayout = ({ children }) => {
                     data-bs-toggle='dropdown'
                   >
                     <img
-                      src={profilePic}
+                      src={user.image_url}
                       alt='image_user'
                       className='w-40-px h-40-px object-fit-cover rounded-circle'
                     />
@@ -246,10 +247,10 @@ const MasterLayout = ({ children }) => {
                     <div className='py-12 px-16 radius-8 bg-primary-50 mb-16 d-flex align-items-center justify-content-between gap-2'>
                       <div>
                         <h6 className='text-lg text-primary-light fw-semibold mb-2'>
-                          Peter Webb
+                          {user.name}
                         </h6>
                         <span className='text-secondary-light fw-medium text-sm'>
-                          Admin
+                          {user.role}
                         </span>
                       </div>
                       <button type='button' className='hover-text-danger'>
