@@ -14,6 +14,7 @@ const PackagesService = {
     data.append('additional_notes', formData.additional_notes);
     if (formData.document) {
       data.append('document', formData.document);
+      
     }
 
     // Append deliverables as deliverables[0][name], etc.

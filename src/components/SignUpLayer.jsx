@@ -69,7 +69,7 @@ const SignUpLayer = () => {
             className="w-100"
             src={banner}
             alt=''
-            style={{ objectFit: "cover", objectPosition: "bottom", height: "950px" }}
+            style={{ objectFit: "cover", objectPosition: "bottom", height: "100%" }}
           />
         </div>
       </div>

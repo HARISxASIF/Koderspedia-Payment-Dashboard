@@ -12645,7 +12645,7 @@ textarea:active{
 
 .icon-field .icon {
   position: absolute;
-  top: 12px;
+  top: 19px !important;
   inset-inline-start: 0;
   width: 40px;
   display: flex;
@@ -12653,6 +12653,7 @@ textarea:active{
   align-items: center;
   font-size: 1.25rem;
   color: var(--text-secondary-light);
+  transform: translateY(0%) !important;
 }
 
 .icon-field .form-control {
@@ -12677,6 +12678,8 @@ textarea:active{
   margin-bottom: 0;
   padding-left: 0;
   gap: 12px;
+  display: flex;
+  align-items: center;
 }
 
 .form-check.style-check .form-check-input::before {

@@ -113,11 +113,11 @@ const PackageDataTable = () => {
             options: {
                 customBodyRender: (value) => {
                     const colorClass = {
-                        'WEBSITE': 'bg-primary',
-                        'SOCIAL MEDIA': 'bg-info',
-                        'SEO': 'bg-warning',
-                        'App': 'bg-success',
-                    }[value] || 'bg-secondary';
+                        'Website': 'bg-primary',
+                        'Mobile App': 'bg-info',
+                        'Seo': 'bg-warning',
+                        'Social Media': 'bg-success',
+                    }[value] || 'bg-primary';
 
                     return (
                         <span className={`badge ${colorClass} text-white`}>

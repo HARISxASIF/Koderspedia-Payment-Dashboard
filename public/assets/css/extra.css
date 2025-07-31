@@ -591,7 +591,7 @@ table.dataTable td.dt-type-date {
 .salesList{display: flex;gap: 25px; margin-left: 35px;}
 .salesList li{display: list-item;list-style: disc;}
 .editBtn{background-color: #2F78EE; color: #fff; height: 38px; width: 38px; padding: 8px; border-radius: 7px;margin-right: 9px;}
-.deleteBtn{background-color: #E03137; color: #fff; height: 38px; width: 38px; padding: 8px; border-radius: 7px;}
+.deleteBtn{background-color: #E03137; color: #fff !important; height: 38px; width: 38px; padding: 8px; border-radius: 7px;}
 
 .packageTable {background-color: transparent !important;}
 .packageTable table tr,.packageTable table th{background-color: transparent !important;}

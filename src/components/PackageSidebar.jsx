@@ -88,10 +88,10 @@ const PackageSidebar = ({ show, onClose, data }) => {
             <Form.Control type="text" value={data.additional_notes} readOnly />
           </Form.Group>
 
-          <Form.Group className="mb-3">
-            <Form.Label>Document</Form.Label>
-            <Form.Control type="text" value={data.document} readOnly />
-          </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Document</Form.Label>
+              <Form.Control type="text" value={data.document} readOnly />
+            </Form.Group>
 
           <div className="text-end  d-flex justify-content-end gap-10 absolute">
             <Button className="btn bg-secondary d-flex gap-10 drawerBtn" onClick={onClose} >
