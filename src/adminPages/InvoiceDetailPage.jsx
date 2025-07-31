@@ -61,8 +61,8 @@ const InvoicePaymentPage = () => {
   return (
     <div className="invoice-page-wrapper">
       <div className="invoice-page-header">
-        <img src={kpLogo} alt="Logo" className="invoice-logo" />
-        <h1>Invoice from Koderspedia</h1>
+        <img src={invoiceData.brand.logo_url} alt="Logo" className="invoice-logo" />
+        <h1>Invoice from {invoiceData.brand.name}</h1>
       </div>
 
       <div className="invoice-grid">

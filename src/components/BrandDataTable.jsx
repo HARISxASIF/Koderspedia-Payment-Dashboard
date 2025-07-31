@@ -2,57 +2,43 @@ import React, { useState, useMemo, useEffect } from 'react';
 import MUIDataTable from 'mui-datatables';
 import { Icon } from '@iconify/react';
 import { useNavigate } from 'react-router-dom';
-import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteClient, fetchClients } from '../store/slices/clientSlice';
 import DeleteConfirmButton from './DeleteConfirmButton';
-import profilePic from "../otherImages/profilePic.png";
+import { deleteBrand, fetchBrands } from '../store/slices/brandSlice';
 
-const ClientDataTable = () => {
+const BrandDataTable = () => {
   const [filter, setFilter] = useState('monthly');
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { clients, loading, error } = useSelector((state) => state.clients);
+  const { brands, loading, error } = useSelector((state) => state.brands);
+  console.log("Brands:", brands);
+
   useEffect(() => {
-    dispatch(fetchClients());
+    dispatch(fetchBrands());
   }, [dispatch]);
 
-  const handleEditClient = (rowData) => {
-    navigate(`/edit-client/${rowData.id}`, { state: { client: rowData } });
+  const handleEditBrand = (rowData) => {
+    navigate(`/edit-brand/${rowData.id}`, { state: { brand: rowData } });
   };
-  const transformedClients = useMemo(() => {
-    console.log("Clients Data:", clients);
-    if (!clients) return [];
-    return clients.map(client => ({
-      ...client,
-      date: client.created_at ? new Date(client.created_at).toLocaleDateString() : 'N/A',
-      packageNames: Array.isArray(client.packages) && client.packages.length > 0
-        ? client.packages.map(pkg => pkg.name).join(', ')
+  const transformedBrands = useMemo(() => {
+    console.log("Brands Data:", brands);
+    if (!brands) return [];
+    return brands.map(brand => ({
+      ...brand,
+      date: brand.created_at ? new Date(brand.created_at).toLocaleDateString() : 'N/A',
+      packageNames: Array.isArray(brand.packages) && brand.packages.length > 0
+        ? brand.packages.map(pkg => pkg.name).join(', ')
         : 'None'
     }))
-  }, [clients])
+  }, [brands]);
+  const filteredData = transformedBrands;
 
-  // const filteredData = useMemo(() => {
-  //   if (filter === 'monthly') {
-  //     const currentMonth = new Date().getMonth();
-  //     console.log("Current Month:", currentMonth);
-  //     const currentYear = new Date().getFullYear();
-  //     return transformedClients.filter(client => {
-  //       if (!client.date || client.date === 'N/A') return false;
-  //       const rowDate = new Date(client.date);
-  //       console.log("Client Date:", rowDate.getMonth());
-  //       return rowDate.getMonth() === currentMonth && rowDate.getFullYear() === currentYear;
-  //     });
-  //   }
-  //   return transformedClients;
-  // }, [filter, transformedClients]);
-  // console.log("Filtered Data:", filteredData);
-  const filteredData = transformedClients;
   const columns = [
     {
       name: 'name',
-      label: 'Client Name',
+      label: 'Brand Name',
       options: {
         customBodyRenderLite: (dataIndex) => {
           const rowData = filteredData[dataIndex];
@@ -61,7 +47,7 @@ const ClientDataTable = () => {
             <div className={`col-clientName val-${safeVal} d-flex align-items-center gap-8`}>
               <img
                 style={{ height: "35px", width: "35px", borderRadius: "50%" }}
-                src={rowData.image_url ?? profilePic}
+                src={rowData.logo_url}
                 alt="package"
               />
               {rowData.name}
@@ -101,37 +87,15 @@ const ClientDataTable = () => {
       }
     },
     {
-      name: 'phone',
-      label: 'Phone',
+      name: 'address',
+      label: 'Address',
       options: {
         customBodyRenderLite: (dataIndex) => {
           const rowData = filteredData[dataIndex];
-          const safeVal = rowData.phone?.toLowerCase().replace(/\s+/g, '-');
+          const safeVal = rowData.address?.toLowerCase().replace(/\s+/g, '-');
           return (
-            <span className={`col-phone val-${safeVal} font-bold`}>
-              {rowData.phone ?? 'N/A'}
-            </span>
-          );
-        }
-      }
-    },
-    {
-      name: 'packageNames', // Changed from 'packages' to use our flattened field
-      label: 'Assigned Packages',
-      options: {
-        searchable: true, // Enable searching
-        filter: true,
-        sort: true,
-        customBodyRenderLite: (dataIndex) => {
-          const rowData = filteredData[dataIndex];
-          const packagesArray = Array.isArray(rowData.packages) ? rowData.packages : [];
-          const packageNames = packagesArray.map(pkg => pkg.name || 'Unnamed Package');
-          const displayText = packageNames.length ? packageNames.join(', ') : 'None';
-          const safeVal = displayText.toLowerCase().replace(/\s+/g, '-');
-
-          return (
-            <span className={`col-packages ${safeVal} px-2 py-1 rounded-full font-medium`}>
-              {displayText}
+            <span className={`col-address val-${safeVal} font-bold`}>
+              {rowData.address ?? 'N/A'}
             </span>
           );
         }
@@ -148,7 +112,7 @@ const ClientDataTable = () => {
           return (
             <div>
               <Icon
-                onClick={() => handleEditClient(rowData)}
+                onClick={() => handleEditBrand(rowData)}
                 className="editBtn hover: cursor-pointer"
                 icon="line-md:edit"
                 width="24"
@@ -156,9 +120,9 @@ const ClientDataTable = () => {
               />
               <DeleteConfirmButton
                 item={{ id: rowData.id, name: rowData.name }}
-                deleteAction={deleteClient}
+                deleteAction={deleteBrand}
                 className="deleteBtn hover:cursor-pointer"
-                title="Delete Invoice"
+                title="Delete Brand"
               >
                 <Icon icon="material-symbols:delete-outline" width="24" height="24" />
               </DeleteConfirmButton>
@@ -203,29 +167,6 @@ const ClientDataTable = () => {
               : "Monthly Client Overview"}
           </h3>
         </div>
-        <div className="custom-toggle">
-          <div className="toggle-container">
-            <div
-              className={`toggle-indicator ${filter === "all" ? "right" : "left"
-                }`}
-            />
-            <div
-              className={`toggle-option ${filter === "monthly" ? "active" : ""
-                }`}
-              onClick={() => setFilter("monthly")}
-            >
-              <Icon icon="mdi:account" width="22" />
-              <span>This Month</span>
-            </div>
-            <div
-              className={`toggle-option ${filter === "all" ? "active" : ""}`}
-              onClick={() => setFilter("all")}
-            >
-              <Icon icon="mdi:account-group" width="25" />
-              <span>All Time</span>
-            </div>
-          </div>
-        </div>
       </div>
       <div className="card-body">
         <MUIDataTable
@@ -239,4 +180,4 @@ const ClientDataTable = () => {
   );
 };
 
-export default ClientDataTable;
+export default BrandDataTable;

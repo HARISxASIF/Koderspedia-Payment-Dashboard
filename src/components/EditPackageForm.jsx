@@ -13,7 +13,6 @@ const validationSchema = Yup.object().shape({
   description: Yup.string().required('Description is required'),
   price: Yup.number().required('Price is required'),
   category_id: Yup.number().required('Category is required'),
-  additional_notes: Yup.string().required('Additional notes are required'),
   document: Yup.mixed().nullable(),
 });
 
@@ -155,7 +154,7 @@ const EditPackageForm = () => {
             </div>
 
             <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
-              {isSubmitting ? 'Updating...' : 'Updating Package'}
+              {isSubmitting ? 'Updating...' : 'Update Package'}
             </button>
           </Form>
         )}

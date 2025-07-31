@@ -11,7 +11,7 @@ const SignUpLayer = () => {
   const dispatch = useDispatch();
   const { loading, error } = useSelector((state) => state.auth);
   const navigate = useNavigate();
-useEffect(() => {
+  useEffect(() => {
     dispatch(clearErrors());
   }, [dispatch]);
   const registerSchema = Yup.object().shape({
@@ -25,8 +25,18 @@ useEffect(() => {
       .matches(/^[a-zA-Z0-9_]+$/, 'Only letters, numbers and underscores')
       .required('Required'),
     email: Yup.string()
-      .email('Invalid email')
-      .required('Required'),
+      .test(
+        'is-valid-email',
+        'Email must contain "@" and a domain like ".com"',
+        function (value) {
+          // Basic custom check
+          return (
+            typeof value === 'string' &&
+            value.includes('@') &&
+            /\.[a-z]{2,}$/.test(value.split('@')[1] || '')
+          );
+        }
+      ),
     password: Yup.string()
       .min(8, 'Minimum 8 characters')
       // .matches(
@@ -44,7 +54,7 @@ useEffect(() => {
   const handleSubmit = async (values, { setSubmitting }) => {
     const { confirmPassword, terms, ...registrationData } = values;
     const resultAction = await dispatch(registerUser(registrationData));
-    
+
     if (registerUser.fulfilled.match(resultAction)) {
       navigate('/all-packages');
     }
@@ -55,15 +65,15 @@ useEffect(() => {
     <section className='auth bg-base d-flex'>
       <div className='auth-left d-lg-block d-none'>
         <div className='d-flex align-items-center flex-column h-100 justify-content-center'>
-          <img 
-            className="w-100" 
-            src={banner} 
-            alt='' 
-            style={{ objectFit: "cover", objectPosition: "bottom", height: "950px" }} 
+          <img
+            className="w-100"
+            src={banner}
+            alt=''
+            style={{ objectFit: "cover", objectPosition: "bottom", height: "950px" }}
           />
         </div>
       </div>
-      
+
       <div className='auth-right py-32 px-24 d-flex flex-column justify-content-center'>
         <div className='max-w-464-px mx-auto w-100'>
           <div>
@@ -83,7 +93,7 @@ useEffect(() => {
           )}
 
           <Formik
-            initialValues={{ 
+            initialValues={{
               name: '',
               username: '',
               email: '',
@@ -184,8 +194,8 @@ useEffect(() => {
                 </div>
 
                 {/* Submit Button */}
-                <button 
-                  type='submit' 
+                <button
+                  type='submit'
                   className='btn bg-primary py-16 w-100 radius-12 mt-32'
                   disabled={loading || isSubmitting}
                 >

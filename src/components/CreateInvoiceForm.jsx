@@ -10,6 +10,7 @@ import { useDispatch } from "react-redux";
 import { createInvoice } from "../store/slices/invoiceSlice";
 import InvoiceService from "../services/invoiceService";
 import { Navigate, useNavigate } from "react-router-dom";
+import { fetchBrands } from "../store/slices/brandSlice";
 
 const validationSchema = Yup.object({
   title: Yup.string().required("Invoice Title is required"),
@@ -19,6 +20,7 @@ const validationSchema = Yup.object({
   description: Yup.string().required("Description is required"),
   category_id: Yup.string().required("Category is required"),
   payment_type_id: Yup.string().required("Payment Type is required"),
+  brand_id: Yup.string().required("Brand is required"),
   sale_type: Yup.string().required("Sale Type is required"),
 });
 
@@ -30,6 +32,7 @@ const initialValues = {
   description: "",
   category_id: "",
   payment_type_id: "",
+  brand_id: "",
   sale_type: "",
 };
 
@@ -43,12 +46,11 @@ const CreateInvoiceForm = () => {
   const [loadingClient, setLoadingClients] = useState(true);
   const [paymentTypeOptions, setPaymentTypeOptions] = useState([]);
   const [loadingPaymentTypes, setLoadingPaymentTypes] = useState(true);
-
+  const { brands } = useSelector((state) => state.brands);
   useEffect(() => {
     const fetchPaymentTypes = async () => {
       try {
         const response = await InvoiceService.getPaymentTypes();
-        console.log(response);
         const options = response.data.data.payment_types.map((pt) => ({
           value: pt.id,
           label: pt.name,
@@ -100,6 +102,7 @@ const CreateInvoiceForm = () => {
   }, []);
   const handleSubmit = async (values, { resetForm }) => {
     try {
+      console.log("Submitting values:", values);
       await dispatch(createInvoice(values)).unwrap();
       Swal.fire({
         icon: "success",
@@ -113,7 +116,7 @@ const CreateInvoiceForm = () => {
       Swal.fire({
         icon: "error",
         title: "Oops...",
-        text: "Something went wrong while creating the invoice!",
+        text: error || "Something went wrong while creating the invoice!",
       });
       console.error("Submit error:", error);
     }
@@ -125,7 +128,7 @@ const CreateInvoiceForm = () => {
       validationSchema={validationSchema}
       onSubmit={handleSubmit}
     >
-      {({ values, setFieldValue,isSubmitting }) => (
+      {({ values, setFieldValue, isSubmitting }) => (
         <Form className="container mt-4 mainForm" encType="multipart/form-data">
           <div className="mb-3">
             <label htmlFor="title" className="form-label">
@@ -208,6 +211,27 @@ const CreateInvoiceForm = () => {
               isSearchable
             />
             <ErrorMessage name="category" component="div" className="text-danger" />
+          </div>
+          <div className="mb-3">
+            <label htmlFor="payment_type" className="form-label">
+              Brand <span>*</span>
+            </label>
+            <Select
+              name="brand_id"
+              id="brand_id"
+              options={brands?.map(brand => ({
+                value: brand.id,
+                label: brand.name
+              })) || []}
+              value={brands?.find(brand => brand.id === values.brand_id) ? {
+                value: values.brand_id,
+                label: brands.find(brand => brand.id === values.brand_id)?.name
+              } : null}
+              onChange={(option) => setFieldValue("brand_id", option?.value || "")}
+              placeholder="Select a brand"
+              isSearchable
+            />
+            <ErrorMessage name="brand_id" component="div" className="text-danger" />
           </div>
           <div className="mb-3">
             <label htmlFor="payment_type" className="form-label">

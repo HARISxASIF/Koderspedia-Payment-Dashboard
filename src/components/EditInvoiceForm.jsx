@@ -18,6 +18,7 @@ const validationSchema = Yup.object().shape({
   description: Yup.string().required('Description is required'),
   category_id: Yup.string().required('Category is required'),
   payment_type_id: Yup.string().required('Payment type is required'),
+  brand_id: Yup.string().required("Brand is required"),
   sale_type: Yup.string().required('Sale type is required'),
 });
 
@@ -27,7 +28,7 @@ const EditInvoiceForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { clients } = useSelector((state) => state.clients);
-
+  const { brands } = useSelector((state) => state.brands);
   const [categoryOptions, setCategoryOptions] = useState([]);
   const [paymentTypeOptions, setPaymentTypeOptions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -81,6 +82,7 @@ const EditInvoiceForm = () => {
     description: invoiceData?.description || '',
     category_id: invoiceData?.category_id || '',
     payment_type_id: invoiceData?.payment_type_id || '',
+    brand_id: invoiceData?.brand_id || '',
     sale_type: invoiceData?.sale_type || 'Fresh Sale',
   };
 
@@ -90,7 +92,7 @@ const EditInvoiceForm = () => {
         id: invoiceData.id,
         invoiceData: values
       })).unwrap();
-      
+
       Swal.fire({
         icon: 'success',
         title: 'Invoice Updated Successfully!',
@@ -173,7 +175,7 @@ const EditInvoiceForm = () => {
                 name="client_id"
                 options={clientOptions}
                 value={clientOptions.find(option => option.value === values.client_id)}
-                onChange={(selectedOption) => 
+                onChange={(selectedOption) =>
                   setFieldValue("client_id", selectedOption?.value)
                 }
                 onBlur={handleBlur}
@@ -196,6 +198,27 @@ const EditInvoiceForm = () => {
               />
               <ErrorMessage name="description" component="div" className="text-danger" />
             </div>
+            <div className="mb-3">
+              <label htmlFor="payment_type" className="form-label">
+                Brand <span>*</span>
+              </label>
+              <Select
+                name="brand_id"
+                id="brand_id"
+                options={brands?.map(brand => ({
+                  value: brand.id,
+                  label: brand.name
+                })) || []}
+                value={brands?.find(brand => brand.id === values.brand_id) ? {
+                  value: values.brand_id,
+                  label: brands.find(brand => brand.id === values.brand_id)?.name
+                } : null}
+                onChange={(option) => setFieldValue("brand_id", option?.value || "")}
+                placeholder="Select a brand"
+                isSearchable
+              />
+              <ErrorMessage name="brand_id" component="div" className="text-danger" />
+            </div>
 
             <div className="row">
               <div className="col-md-6 mb-3">
@@ -207,7 +230,7 @@ const EditInvoiceForm = () => {
                   name="category_id"
                   options={categoryOptions}
                   value={categoryOptions.find(option => option.value === values.category_id)}
-                  onChange={(selectedOption) => 
+                  onChange={(selectedOption) =>
                     setFieldValue("category_id", selectedOption?.value)
                   }
                   onBlur={handleBlur}
@@ -225,7 +248,7 @@ const EditInvoiceForm = () => {
                   name="payment_type_id"
                   options={paymentTypeOptions}
                   value={paymentTypeOptions.find(option => option.value === values.payment_type_id)}
-                  onChange={(selectedOption) => 
+                  onChange={(selectedOption) =>
                     setFieldValue("payment_type_id", selectedOption?.value)
                   }
                   onBlur={handleBlur}
@@ -251,8 +274,8 @@ const EditInvoiceForm = () => {
                       className="form-check-input"
                     />
                     <label className="form-check-label" htmlFor={type.replace(" ", "")}>
-                    {type}
-                  </label>
+                      {type}
+                    </label>
                   </div>
                 ))}
               </div>
@@ -267,7 +290,7 @@ const EditInvoiceForm = () => {
               >
                 {isSubmitting ? 'Updating...' : 'Update Invoice'}
               </button>
-             
+
             </div>
           </Form>
         )}

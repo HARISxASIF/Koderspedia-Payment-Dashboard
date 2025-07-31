@@ -24,6 +24,9 @@ import InvoiceDetailPage from "./adminPages/InvoiceDetailPage";
 import SendPasswordResetTokenPage from "./adminPages/SendPasswordResetTokenPage";
 import VerifyPasswordResetTokenPage from "./adminPages/VerifyPasswordResetTokenPage";
 import ResetPasswordPage from "./adminPages/ResetPasswordPage";
+import ManageBrands from "./adminPages/ManageBrands";
+import AddBrandPage from "./adminPages/AddBrandPage";
+import EditBrandPage from "./adminPages/EditBrandPage";
 
 function App() {
 
@@ -44,17 +47,25 @@ function App() {
 
         {/* Admin Protected Routes */}
         <Route path='/dashboard' element={<ProtectedRoute element={HomePageOne} allowedRole="admin" />} />
+
         <Route path='/manage-clients' element={<ProtectedRoute element={ManageClients} allowedRole="admin" />} />
-        <Route path='/manage-packages' element={<ProtectedRoute element={ManagePackages} allowedRole="admin" />} />
         <Route path='/add-client' element={<ProtectedRoute element={AddClientPage} allowedRole="admin" />} />
+        <Route path='/edit-client/:id' element={<ProtectedRoute element={EditClientPage} allowedRole="admin" />} />
+        
+        <Route path='/manage-brands' element={<ProtectedRoute element={ManageBrands} allowedRole="admin" />} />
+        <Route path='/add-brand' element={<ProtectedRoute element={AddBrandPage} allowedRole="admin" />} />
+        <Route path='/edit-brand/:id' element={<ProtectedRoute element={EditBrandPage} allowedRole="admin" />} />
+        
+        <Route path='/manage-packages' element={<ProtectedRoute element={ManagePackages} allowedRole="admin" />} />
         <Route path='/add-package' element={<ProtectedRoute element={AddPackagePage} allowedRole="admin" />} />
         <Route path='/edit-package/:id' element={<ProtectedRoute element={EditPackagePage} allowedRole="admin" />} />
-        <Route path='/edit-client/:id' element={<ProtectedRoute element={EditClientPage} allowedRole="admin" />} />
-        <Route path='/edit-invoice/:id' element={<ProtectedRoute element={EditInvoicePage} allowedRole="admin" />} />
-        <Route path='/manage-invoice' element={<ProtectedRoute element={ManageInvoices} allowedRole="admin" />} />
+
         <Route path='/create-invoice' element={<ProtectedRoute element={CreateInvoicePage} allowedRole="admin" />} />
-        <Route path='/login-history' element={<ProtectedRoute element={LoginHistoryPage} allowedRole="admin" />} />
+        <Route path='/manage-invoice' element={<ProtectedRoute element={ManageInvoices} allowedRole="admin" />} />
+        <Route path='/edit-invoice/:id' element={<ProtectedRoute element={EditInvoicePage} allowedRole="admin" />} />
         <Route path='/invoice-detail/:id' element={<InvoiceDetailPage/>} />
+        
+        <Route path='/login-history' element={<ProtectedRoute element={LoginHistoryPage} allowedRole="admin" />} />
 
         {/* Client Protected Routes */}
         <Route path='/all-packages' element={<ProtectedRoute element={ClientPackagesPage} allowedRole="client" />} />

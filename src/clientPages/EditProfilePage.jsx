@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { editProfile } from "../store/slices/authSlice";
 
 const validationSchema = Yup.object().shape({
-  name: Yup.string()
+  name: Yup.string().required('Name is required')
     .min(2, 'Name must be at least 2 characters')
     .max(50, 'Name must not exceed 50 characters'),
 
@@ -31,10 +31,10 @@ const validationSchema = Yup.object().shape({
         }
       ),
 
-  phone: Yup.string()
+  phone: Yup.string().required('Phone number is required')
     .matches(/^[0-9]+$/, 'Must be only digits')
-    .min(8, 'Must be at least 8 digits')
-    .max(15, 'Must be less than 15 digits'),
+    .min(10, 'Must be at least 10 digits')
+    .max(11, 'Must be less than 11 digits'),
 
   address: Yup.string()
     .max(100, 'Address must not exceed 100 characters'),
@@ -205,6 +205,7 @@ const EditProfilePage = () => {
                       className="form-control form-control1 p-3"
                       placeholder="+01"
                     />
+                    <ErrorMessage name="phone" component="div" className="text-danger small" />
                   </div>
                   <div className="col-md-6">
                     <label className="form-label fw-medium">Address</label>

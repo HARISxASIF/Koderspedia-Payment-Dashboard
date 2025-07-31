@@ -4,7 +4,7 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import Swal from 'sweetalert2';
 import { Icon } from '@iconify/react';
-import { createClient, cleanupClients } from '../store/slices/clientSlice';
+import { createClient } from '../store/slices/clientSlice';
 import { useNavigate } from 'react-router-dom';
 
 const AddClientForm = () => {

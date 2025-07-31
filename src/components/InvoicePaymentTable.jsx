@@ -2,6 +2,7 @@ import React from "react";
 import favicon from "../otherImages/favicon.svg";
 
 const InvoicePaymentTable = ({ invoiceData }) => {
+  console.log("Invoice Data:", invoiceData);
   // Format currency
   const formatCurrency = (amount) => {
     return parseFloat(amount).toLocaleString('en-US', {
@@ -40,7 +41,6 @@ const InvoicePaymentTable = ({ invoiceData }) => {
       <div className="invoice-bill-to">
         <div className="invoice-to">
           <p><strong>BILLED TO:</strong></p>
-          {console.log(invoiceData.client)}
           <p>{invoiceData.client.name}</p>
           <p>{invoiceData.client.phone}</p>
           <p>{invoiceData.client.address || "Address not specified"}</p>
@@ -82,15 +82,16 @@ const InvoicePaymentTable = ({ invoiceData }) => {
       <div className="invoice-payment-info">
         <div>
           <p><strong>PAYMENT INFORMATION</strong></p>
-          <p>Koderspedia Bank</p>
-          <p>Account Name: Koderspedia</p>
+          <p>{invoiceData.brand.name} Bank</p>
+          <p>Account Name: {invoiceData.brand.name}</p>
+          <p>{invoiceData.brand.email}</p>
           <p>Account No: 123-456-7890</p>
           <p>Pay by: {formatDate(dueDate)}</p>
         </div>
 
         <div className="invoice-sign">
-          <p className="name">Koderspedia</p>
-          <p>123 Business St., Business City</p>
+          <p className="name">{invoiceData.brand.name}</p>
+          <p>{invoiceData.brand.address}</p>
         </div>
       </div>
     </div>
