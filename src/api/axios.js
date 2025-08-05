@@ -2,7 +2,7 @@ import axios from 'axios';
 import { store } from '../store/store';
 
 const axiosInstance = axios.create({
-  baseURL: process.env.REACT_APP_API_BASE_URL,
+  baseURL: process.env.REACT_APP_API_BASE_PRODUCTION_URL,
 });
 
 // Request interceptor

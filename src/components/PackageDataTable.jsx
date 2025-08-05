@@ -42,16 +42,16 @@ const PackageDataTable = () => {
             category: pkg.category?.name || 'N/A', // for display
         }));
     }, [packages]);
-    // const filteredData = useMemo(() => {
-    //     return transformedPackages.filter(pkg => {
-    //         const rowDate = new Date(pkg.date);
-    //         const isInDateRange = rowDate >= new Date(startDate.setHours(0, 0, 0, 0)) &&
-    //             rowDate <= new Date(endDate.setHours(23, 59, 59, 999));
-    //         const isInTypeFilter = !filter || pkg.type === filter;
-    //         return isInDateRange && isInTypeFilter;
-    //     });
-    // }, [transformedPackages, startDate, endDate, filter]);
-    const filteredData = transformedPackages;
+    const filteredData = useMemo(() => {
+        return transformedPackages.filter(pkg => {
+            const rowDate = new Date(pkg.created_at);
+            const isInDateRange = rowDate >= new Date(startDate.setHours(0, 0, 0, 0)) &&
+                rowDate <= new Date(endDate.setHours(23, 59, 59, 999));
+            const isInTypeFilter = !filter || pkg.type === filter;
+            return isInDateRange && isInTypeFilter;
+        });
+    }, [transformedPackages, startDate, endDate, filter]);
+    // const filteredData = transformedPackages;
     const columns = [
         {
             name: 'name',

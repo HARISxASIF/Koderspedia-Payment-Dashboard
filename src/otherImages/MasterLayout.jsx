@@ -10,7 +10,7 @@ import { useSelector } from 'react-redux';
 
 const MasterLayout = ({ children }) => {
   const role = useSelector((state) => state.auth.role);
-  const {user} = useSelector((state) => state.auth);
+  const { user } = useSelector((state) => state.auth);
   const [sidebarActive, setSidebarActive] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
   const location = useLocation();
@@ -188,12 +188,10 @@ const MasterLayout = ({ children }) => {
         <div className="bottomSide">
           <ul>
             <li>
-              <NavLink
-                to='#'
-              >
+              <a href="mailto:connect@koderspedia.com">
                 <Icon icon='tabler:building-estate' className='menu-icon' width="28" height="28" />
                 <span>Help Center</span>
-              </NavLink>
+              </a>
             </li>
             <li>
               {/* <NavLink to='/'>
