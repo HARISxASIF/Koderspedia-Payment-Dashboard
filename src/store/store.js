@@ -9,6 +9,7 @@ import loginActivityReducer from './slices/loginActivitySlice'
 import assignedPackagesReducer from './slices/assignedPackagesSlice';
 import paymentHistoryReducer from './slices/paymentHistorySlice';
 import brandsReducer from './slices/brandSlice';
+import usersReducer from './slices/userSlice';
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -18,12 +19,13 @@ const rootReducer = combineReducers({
   loginActivity: loginActivityReducer,
   assignedPackages: assignedPackagesReducer,
   paymentHistory: paymentHistoryReducer,
-  brands: brandsReducer
+  brands: brandsReducer,
+  users: usersReducer
 });
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['auth','packages','clients','invoices','loginActivity','assignedPackages','paymentHistory','brands'], // Remove 'packages' if you want fresh API fetches on reload
+  whitelist: ['auth','packages','clients','invoices','loginActivity','assignedPackages','paymentHistory','brands','users'], // Remove 'packages' if you want fresh API fetches on reload
 };
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 

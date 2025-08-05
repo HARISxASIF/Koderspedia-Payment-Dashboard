@@ -22,7 +22,6 @@ const ClientDataTable = () => {
     navigate(`/edit-client/${rowData.id}`, { state: { client: rowData } });
   };
   const transformedClients = useMemo(() => {
-    console.log("Clients Data:", clients);
     if (!clients) return [];
     return clients.map(client => ({
       ...client,
@@ -33,22 +32,17 @@ const ClientDataTable = () => {
     }))
   }, [clients])
 
-  // const filteredData = useMemo(() => {
-  //   if (filter === 'monthly') {
-  //     const currentMonth = new Date().getMonth();
-  //     console.log("Current Month:", currentMonth);
-  //     const currentYear = new Date().getFullYear();
-  //     return transformedClients.filter(client => {
-  //       if (!client.date || client.date === 'N/A') return false;
-  //       const rowDate = new Date(client.date);
-  //       console.log("Client Date:", rowDate.getMonth());
-  //       return rowDate.getMonth() === currentMonth && rowDate.getFullYear() === currentYear;
-  //     });
-  //   }
-  //   return transformedClients;
-  // }, [filter, transformedClients]);
-  // console.log("Filtered Data:", filteredData);
-  const filteredData = transformedClients;
+  const filteredData = useMemo(() => {
+    if (filter === 'monthly') {
+      const currentMonth = new Date().getMonth();
+      const currentYear = new Date().getFullYear();
+      return transformedClients.filter(client => {
+        const rowDate = new Date(client.created_at);
+        return rowDate.getMonth() === currentMonth && rowDate.getFullYear() === currentYear;
+      });
+    }
+    return transformedClients;
+  }, [filter, transformedClients]);
   const columns = [
     {
       name: 'name',

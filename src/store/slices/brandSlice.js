@@ -18,7 +18,6 @@ export const createBrand = createAsyncThunk(
     'Brands/createBrand',
     async (brandData, { rejectWithValue }) => {
         try {
-            console.log("Creating Brand with data:", brandData);
             const response = await BrandService.create(brandData);
             if (response.data?.data?.brand) {
                 return response.data.data.brand;

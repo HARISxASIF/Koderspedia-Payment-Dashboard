@@ -45,7 +45,7 @@ const MyPackageTable = () => {
     packageImage: DefaultAvatar, // Using default avatar for all
     date: new Date(item.created_at).toLocaleDateString(),
     description: item.package.description,
-    price: `$${parseFloat(item.package.price).toFixed(2)}`,
+    priceText: `$${parseFloat(item.package.price).toFixed(0)}`,
     packageDeliverable: item.package.deliverables.map(d => d.name),
     invoice: item.invoice,
     paymentStatus: getStatusText(item.status),

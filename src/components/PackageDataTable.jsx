@@ -103,7 +103,7 @@ const PackageDataTable = () => {
             label: 'Price',
             options: {
                 customBodyRender: (value) => (
-                    <span className="fw-bold">${parseFloat(value).toFixed(2)}</span>
+                    <span className="fw-bold">${parseFloat(value).toFixed(0)}</span>
                 )
             }
         },
@@ -168,7 +168,7 @@ const PackageDataTable = () => {
         print: false,
         download: false,
         viewColumns: false,
-        filter: false,
+        filter: true,
         search: true,
         serverSide: false,
         textLabels: {

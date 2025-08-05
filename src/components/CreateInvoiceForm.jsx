@@ -102,7 +102,6 @@ const CreateInvoiceForm = () => {
   }, []);
   const handleSubmit = async (values, { resetForm }) => {
     try {
-      console.log("Submitting values:", values);
       await dispatch(createInvoice(values)).unwrap();
       Swal.fire({
         icon: "success",
@@ -118,7 +117,6 @@ const CreateInvoiceForm = () => {
         title: "Oops...",
         text: error || "Something went wrong while creating the invoice!",
       });
-      console.error("Submit error:", error);
     }
   };
 
@@ -253,7 +251,7 @@ const CreateInvoiceForm = () => {
               Sale Type <span>*</span>
             </label>
             <div>
-              {["Fresh Sale", "Upsell", "Recurring"].map(type => (
+              {["fresh sale", "upsell", "recurring"].map(type => (
                 <div className="form-check" key={type}>
                   <Field
                     className="form-check-input"

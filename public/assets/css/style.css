@@ -15963,3 +15963,4 @@ td.fc-header-center {
   position: relative;
     z-index: 0;
 }
+.MuiTable-root thead th:last-child{width: 120px !important;}

@@ -36,7 +36,7 @@ const InvoiceDataTable = () => {
       clientName: invoice.client?.name || 'No Name',
       clientImage: invoice.client?.image_url || DefaultAvatar,
       createdByName: invoice.created_by?.name || "N/A",
-      statusText: invoice.status == 1 ? 'paid' : 'pending'
+      statusText: invoice.status == 1 ? 'paid' : 'pending',
     }))
   }, [invoices])
 
@@ -107,7 +107,7 @@ const InvoiceDataTable = () => {
           const safeVal = price.toFixed(2).replace('.', '-');
           return (
             <span className={`col-price val-${safeVal} font-bold`}>
-              ${price.toFixed(2)}
+              ${price.toFixed(0)}
             </span>
           );
         }

@@ -130,8 +130,17 @@ const MasterLayout = ({ children }) => {
                     to='/manage-brands'
                     className={(navData) => (navData.isActive ? "active-page" : "")}
                   >
-                    <Icon icon='akar-icons:clipboard' className='menu-icon' width="28" height="28" />
+                    <Icon icon='fa7-brands:artstation' className='menu-icon' width="28" height="28" />
                     <span>Brands</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to='/manage-users'
+                    className={(navData) => (navData.isActive ? "active-page" : "")}
+                  >
+                    <Icon icon='uil:user-md' className='menu-icon' width="28" height="28" />
+                    <span>Users</span>
                   </NavLink>
                 </li>
                 <li>

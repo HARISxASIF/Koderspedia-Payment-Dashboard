@@ -31,17 +31,14 @@ const EditBrandForm = () => {
   const navigate = useNavigate();
   const fileRef = useRef();
 
-  const formikSetFieldValueRef = useRef(null); // ✅ To store setFieldValue outside Formik
-  const formikValuesRef = useRef(null); // ✅ To check if already set
-
-
-
   const initialValues = {
     name: brandData?.name || '',
     email: brandData?.email || '',
     logo_url: brandData?.logo_url || '',
+    logo_mini_url: brandData?.logo_mini_url || '',
     address: brandData?.address || '',
     logo: null,
+    logo_mini: null,
   };
 
   const handleSubmit = async (values, { setSubmitting }) => {
@@ -111,6 +108,18 @@ const EditBrandForm = () => {
                   onChange={(event) => setFieldValue('logo', event.currentTarget.files[0])}
                 />
                 <ErrorMessage name="logo" component="div" className="text-danger" />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="image" className="form-label">Upload Logo Icon</label>
+                <input
+                  type="file"
+                  className="form-control"
+                  name="logo_mini"
+                  ref={fileRef}
+                  accept="image/*"
+                  onChange={(event) => setFieldValue('logo_mini', event.currentTarget.files[0])}
+                />
+                <ErrorMessage name="logo_mini" component="div" className="text-danger" />
               </div>
 
               <button type="submit" disabled={isSubmitting} className="btn btn-primary">{isSubmitting ? 'Saving...' : 'Save Changes'}</button>

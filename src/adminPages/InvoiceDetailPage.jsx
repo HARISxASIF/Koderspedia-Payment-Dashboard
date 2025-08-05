@@ -6,6 +6,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import LoadingSpinner from "../common/LoadingSpinner";
 import { CreditCard, PaymentForm } from 'react-square-web-payments-sdk';
 import Swal from "sweetalert2";
+import { useSelector } from "react-redux";
 
 const InvoicePaymentPage = () => {
   const { id } = useParams();
@@ -13,6 +14,7 @@ const InvoicePaymentPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [paymentStatus, setPaymentStatus] = useState(null);
+  const { user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   useEffect(() => {
     const fetchInvoiceData = async () => {
@@ -45,7 +47,13 @@ const InvoicePaymentPage = () => {
           showConfirmButton: false,
           timer: 2000,
         });
-        navigate('/my-packages')
+        if (user.role == 'admin') {
+          navigate('/manage-invoice');
+        } else if (user.role == 'client') {
+          navigate('/my-packages');
+        } else {
+          navigate('/');
+        }
       }
       // You can redirect or show success message here
     } catch (err) {

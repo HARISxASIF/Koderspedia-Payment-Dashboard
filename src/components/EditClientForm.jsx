@@ -170,7 +170,8 @@ const EditClientForm = () => {
                   right: 'calc(0% - 0px)',
                   background: '#1d1d4e',
                   borderRadius: '50%',
-                  padding: '10px',
+                  height: '40px',
+                  width: '40px',
                   cursor: 'pointer',
                   boxShadow: '0 0 0 4px white',
                 }}

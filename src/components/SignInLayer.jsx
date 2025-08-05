@@ -25,7 +25,6 @@ const SignInLayer = () => {
     const resultAction = await dispatch(loginUser(values));
     if (loginUser.fulfilled.match(resultAction)) {
       const userRole = resultAction.payload.user.role;
-      dispatch(fetchloginActivity());
       navigate('/dashboard');
       switch (userRole.toLowerCase()) {
         case 'admin':

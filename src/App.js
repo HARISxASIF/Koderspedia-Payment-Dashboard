@@ -27,6 +27,9 @@ import ResetPasswordPage from "./adminPages/ResetPasswordPage";
 import ManageBrands from "./adminPages/ManageBrands";
 import AddBrandPage from "./adminPages/AddBrandPage";
 import EditBrandPage from "./adminPages/EditBrandPage";
+import ManageUsers from "./adminPages/ManageUsers";
+import AddUserPage from "./adminPages/AddUserPage";
+import EditUserPage from "./adminPages/EditUserPage";
 
 function App() {
 
@@ -47,6 +50,10 @@ function App() {
 
         {/* Admin Protected Routes */}
         <Route path='/dashboard' element={<ProtectedRoute element={HomePageOne} allowedRole="admin" />} />
+
+        <Route path='/manage-users' element={<ProtectedRoute element={ManageUsers} allowedRole="admin" />} />
+        <Route path='/add-user' element={<ProtectedRoute element={AddUserPage} allowedRole="admin" />} />
+        <Route path='/edit-user/:id' element={<ProtectedRoute element={EditUserPage} allowedRole="admin" />} />
 
         <Route path='/manage-clients' element={<ProtectedRoute element={ManageClients} allowedRole="admin" />} />
         <Route path='/add-client' element={<ProtectedRoute element={AddClientPage} allowedRole="admin" />} />

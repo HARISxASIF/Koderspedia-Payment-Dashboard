@@ -96,7 +96,7 @@ const ClientPackageTable = () => {
                     const safeVal = value;
                     return (
                         <span className={`col-price packagePrice val-${safeVal} font-bold fs-6`}>
-                            ${parseFloat(value).toFixed(2)}
+                            ${parseFloat(value).toFixed(0)}
                         </span>
                     );
                 }

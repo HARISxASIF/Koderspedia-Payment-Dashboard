@@ -1,12 +1,25 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import SalesStatisticOne from '../components/SalesStatisticOne';
 import UsersOverviewOne from '../components/UsersOverviewOne';
 import ClientInvoiceList from '../components/ClientInvoiceList';
 import UnitCountOne from '../components/UnitCountOne';
 import UsersOverviewTwo from '../components/UsersOverviewTwo';
+import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
+import { fetchClients } from '../store/slices/clientSlice';
+import { fetchInvoices } from '../store/slices/invoiceSlice';
 
 const DashBoardLayerOne = () => {
+    const dispatch = useDispatch();
+    const { invoices } = useSelector((state) => state.invoices);
+    const { clients } = useSelector((state) => state.clients);
+    useEffect(() => {
+        dispatch(fetchClients());
+    }, []);
 
+    useEffect(() => {
+        dispatch(fetchInvoices());
+    }, []);
     return (
         <>
             {/* UnitCountOne */}
@@ -23,7 +36,7 @@ const DashBoardLayerOne = () => {
                 <UsersOverviewTwo />
 
                 {/* LatestRegisteredOne */}
-                <ClientInvoiceList/>
+                <ClientInvoiceList />
 
             </section>
         </>

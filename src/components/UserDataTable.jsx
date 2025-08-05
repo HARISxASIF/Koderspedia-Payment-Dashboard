@@ -2,43 +2,43 @@ import React, { useState, useMemo, useEffect } from 'react';
 import MUIDataTable from 'mui-datatables';
 import { Icon } from '@iconify/react';
 import { useNavigate } from 'react-router-dom';
+import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteClient, fetchClients } from '../store/slices/clientSlice';
 import DeleteConfirmButton from './DeleteConfirmButton';
-import { deleteBrand, fetchBrands } from '../store/slices/brandSlice';
+import profilePic from "../otherImages/profilePic.png";
+import { deleteUser, fetchUsers } from '../store/slices/userSlice';
 
-const BrandDataTable = () => {
+const UserDataTable = () => {
   const [filter, setFilter] = useState('monthly');
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { brands, loading, error } = useSelector((state) => state.brands);
-  console.log("Brands:", brands);
-
+  const { users, loading, error } = useSelector((state) => state.users);
+  console.log("Users:", users);
   useEffect(() => {
-    dispatch(fetchBrands());
+    dispatch(fetchUsers());
   }, [dispatch]);
 
-  const handleEditBrand = (rowData) => {
-    navigate(`/edit-brand/${rowData.id}`, { state: { brand: rowData } });
+  const handleEditUser = (rowData) => {
+    navigate(`/edit-user/${rowData.id}`, { state: { user: rowData } });
   };
-  const transformedBrands = useMemo(() => {
-    console.log("Brands Data:", brands);
-    if (!brands) return [];
-    return brands.map(brand => ({
-      ...brand,
-      date: brand.created_at ? new Date(brand.created_at).toLocaleDateString() : 'N/A',
-      packageNames: Array.isArray(brand.packages) && brand.packages.length > 0
-        ? brand.packages.map(pkg => pkg.name).join(', ')
+  const transformedUsers = useMemo(() => {
+    console.log("Users Data:", users);
+    if (!users) return [];
+    return users.map(user => ({
+      ...user,
+      date: user.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A',
+      packageNames: Array.isArray(user.packages) && user.packages.length > 0
+        ? user.packages.map(pkg => pkg.name).join(', ')
         : 'None'
     }))
-  }, [brands]);
-  const filteredData = transformedBrands;
-
+  }, [users])
+  const filteredData = transformedUsers;
   const columns = [
     {
       name: 'name',
-      label: 'Brand Name',
+      label: 'Name',
       options: {
         customBodyRenderLite: (dataIndex) => {
           const rowData = filteredData[dataIndex];
@@ -47,45 +47,11 @@ const BrandDataTable = () => {
             <div className={`col-clientName val-${safeVal} d-flex align-items-center gap-8`}>
               <img
                 style={{ height: "35px", width: "35px", borderRadius: "50%" }}
-                src={rowData.logo_mini_url}
+                src={rowData.image_url}
                 alt="package"
               />
               {rowData.name}
             </div>
-          );
-        }
-      }
-    },
-    {
-      name: 'logo',
-      label: 'Logo',
-      options: {
-        customBodyRenderLite: (dataIndex) => {
-          const rowData = filteredData[dataIndex];
-          const safeVal = rowData.name?.toLowerCase().replace(/\s+/g, '_');
-          return (
-            <div className={`col-clientName val-${safeVal} d-flex align-items-center gap-8`}>
-              <img
-                style={{ height: "35px", width: "35px", borderRadius: "50%" }}
-                src={rowData.logo_url}
-                alt="package"
-              />
-            </div>
-          );
-        }
-      }
-    },
-    {
-      name: 'date',
-      label: 'Date',
-      options: {
-        customBodyRenderLite: (dataIndex) => {
-          const rowData = filteredData[dataIndex];
-          const safeVal = rowData.date?.toLowerCase().replace(/\s+/g, '-');
-          return (
-            <span className={`col-date val-${safeVal} text-gray-600`}>
-              {rowData.date}
-            </span>
           );
         }
       }
@@ -105,21 +71,7 @@ const BrandDataTable = () => {
         }
       }
     },
-    // {
-    //   name: 'address',
-    //   label: 'Address',
-    //   options: {
-    //     customBodyRenderLite: (dataIndex) => {
-    //       const rowData = filteredData[dataIndex];
-    //       const safeVal = rowData.address?.toLowerCase().replace(/\s+/g, '-');
-    //       return (
-    //         <span className={`col-address val-${safeVal} font-bold`}>
-    //           {rowData.address ?? 'N/A'}
-    //         </span>
-    //       );
-    //     }
-    //   }
-    // },
+    
     {
       name: 'actions',
       label: 'Actions',
@@ -131,7 +83,7 @@ const BrandDataTable = () => {
           return (
             <div>
               <Icon
-                onClick={() => handleEditBrand(rowData)}
+                onClick={() => handleEditUser(rowData)}
                 className="editBtn hover: cursor-pointer"
                 icon="line-md:edit"
                 width="24"
@@ -139,9 +91,9 @@ const BrandDataTable = () => {
               />
               <DeleteConfirmButton
                 item={{ id: rowData.id, name: rowData.name }}
-                deleteAction={deleteBrand}
+                deleteAction={deleteUser}
                 className="deleteBtn hover:cursor-pointer"
-                title="Delete Brand"
+                title="Delete User"
               >
                 <Icon icon="material-symbols:delete-outline" width="24" height="24" />
               </DeleteConfirmButton>
@@ -199,4 +151,4 @@ const BrandDataTable = () => {
   );
 };
 
-export default BrandDataTable;
+export default UserDataTable;

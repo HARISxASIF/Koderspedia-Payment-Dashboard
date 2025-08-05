@@ -20,11 +20,10 @@ const InvoicePaymentTable = ({ invoiceData }) => {
   // Calculate due date (7 days from invoice date)
   const dueDate = new Date(invoiceData.created_at);
   dueDate.setDate(dueDate.getDate() + 7);
-  console.log(invoiceData.status);
   return (
     <div className="invoice-box">
       <div className="invoice-header">
-        <img src={favicon} alt="Logo" className="invoice-logo" />
+        <img src={invoiceData.brand.logo_mini_url} alt="Logo" className="invoice-logo" style={{ width: '10%'}} />
         <h2 className="invoice-title d-flex align-items-center gap-2">
           INVOICE #{invoiceData.id}
           {invoiceData.status == 1 && (

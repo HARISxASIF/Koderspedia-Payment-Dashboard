@@ -18,6 +18,7 @@ const AddBrandForm = () => {
     email: '',
     address: '',
     logo: null,
+    logo_mini: null,
   };
 
   const validationSchema = Yup.object({
@@ -37,6 +38,7 @@ const AddBrandForm = () => {
       ),
     address: Yup.string().required('Address is required'),
     logo: Yup.mixed().required('Logo is required'),
+    logo_mini: Yup.mixed().required('Logo mini is required'),
   });
 
   const handleSubmit = async (values, { resetForm }) => {
@@ -103,6 +105,18 @@ const AddBrandForm = () => {
                 onChange={(event) => setFieldValue('logo', event.currentTarget.files[0])}
               />
               <ErrorMessage name="logo" component="div" className="text-danger" />
+            </div>
+            <div className="mb-4">
+              <label htmlFor="image" className="form-label">Upload Logo Icon</label>
+              <input
+                type="file"
+                className="form-control"
+                name="logo_mini"
+                ref={fileRef}
+                accept="image/*"
+                onChange={(event) => setFieldValue('logo_mini', event.currentTarget.files[0])}
+              />
+              <ErrorMessage name="logo_mini" component="div" className="text-danger" />
             </div>
 
             <button type="submit" disabled={isSubmitting} className="btn btn-primary">{isSubmitting ? 'Saving...' : 'Save Changes'}</button>
