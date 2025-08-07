@@ -14,18 +14,11 @@ import CustomersOverviewTwo from "./CustomersOverviewTwo";
 import CustomersList from "./CustomersList";
 
 const DashBoardLayerOne = () => {
-<<<<<<< HEAD
+
   const dispatch = useDispatch();
   const { invoices } = useSelector((state) => state.invoices);
   const { clients } = useSelector((state) => state.clients);
-=======
-    const dispatch = useDispatch();
-    const { invoices, loading } = useSelector((state) => state.invoices);
-    const { clients } = useSelector((state) => state.clients);
-    useEffect(() => {
-        dispatch(fetchClients());
-    }, []);
->>>>>>> 066b7eb8d3c9a9566e6e08bf60a7c6b5b5041290
+
 
   const [filter, setFilter] = useState("monthly"); // 'monthly' | 'all'
   const activeTab = filter === "monthly" ? "tab1" : "tab2";
