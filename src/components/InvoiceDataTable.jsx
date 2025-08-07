@@ -11,6 +11,7 @@ import DeleteConfirmButton from './DeleteConfirmButton';
 import Swal from 'sweetalert2';
 import InvoiceService from '../services/invoiceService';
 import InvoiceDownloader from '../common/InvoiceDownloader';
+import { fetchBrands } from '../store/slices/brandSlice';
 
 const InvoiceDataTable = () => {
   const dispatch = useDispatch();
@@ -21,6 +22,10 @@ const InvoiceDataTable = () => {
   
   useEffect(() => {
     dispatch(fetchInvoices());
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(fetchBrands());
   }, [dispatch])
 
   const handleEditPackage = (rowData) => {

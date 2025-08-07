@@ -38,7 +38,6 @@ const SignUpLayer = () => {
         }
       ),
     password: Yup.string()
-      .min(8, 'Minimum 8 characters')
       // .matches(
       //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
       //   'Must contain uppercase, number and special character'
