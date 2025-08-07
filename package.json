@@ -17,6 +17,7 @@
     "@hello-pangea/dnd": "^17.0.0",
     "@iconify-json/solar": "^1.2.0",
     "@mui/material": "^5.17.1",
+    "@paypal/react-paypal-js": "^8.8.3",
     "@phosphor-icons/react": "^2.1.7",
     "@popperjs/core": "^2.11.8",
     "@ramonak/react-progress-bar": "^5.2.0",

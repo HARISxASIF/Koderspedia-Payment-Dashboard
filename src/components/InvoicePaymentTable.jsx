@@ -2,7 +2,6 @@ import React from "react";
 import favicon from "../otherImages/favicon.svg";
 
 const InvoicePaymentTable = ({ invoiceData }) => {
-  console.log("Invoice Data:", invoiceData);
   // Format currency
   const formatCurrency = (amount) => {
     return parseFloat(amount).toLocaleString('en-US', {
@@ -42,7 +41,7 @@ const InvoicePaymentTable = ({ invoiceData }) => {
           <p><strong>BILLED TO:</strong></p>
           <p>{invoiceData.client.name}</p>
           <p>{invoiceData.client.phone}</p>
-          <p>{invoiceData.client.address || "Address not specified"}</p>
+          {/* <p>{invoiceData.client.address || "Address not specified"}</p> */}
         </div>
 
         <div className="invoice-meta">

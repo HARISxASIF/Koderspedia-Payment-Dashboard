@@ -11,7 +11,7 @@ import { fetchInvoices } from '../store/slices/invoiceSlice';
 
 const DashBoardLayerOne = () => {
     const dispatch = useDispatch();
-    const { invoices } = useSelector((state) => state.invoices);
+    const { invoices, loading } = useSelector((state) => state.invoices);
     const { clients } = useSelector((state) => state.clients);
     useEffect(() => {
         dispatch(fetchClients());
